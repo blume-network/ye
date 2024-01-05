@@ -6,7 +6,7 @@ fetch('https://raw.githubusercontent.com/mebltwo/ye/gh-pages/colors-07708428.js'
         scriptElement.type = 'module';
         document.head.appendChild(scriptElement);
 
-        import('./colors-07708428.js').then(({
+        import('https://raw.githubusercontent.com/mebltwo/ye/gh-pages/colors-07708428.js').then(({
              c: clamp,
              l: lerp,
              a: clamp01,

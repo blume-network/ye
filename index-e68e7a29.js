@@ -1,4 +1,4 @@
-fetch('https://chemin-vers-le-serveur/chemin/vers/nouveau/colors.js')
+fetch('https://raw.githubusercontent.com/mebltwo/ye/gh-pages/colors-07708428.js')
     .then(response => {
         if (!response.ok) {
             throw new Error("Can't fetch: ${response.status}");

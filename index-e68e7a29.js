@@ -1,62 +1,63 @@
 fetch('https://raw.githubusercontent.com/mebltwo/ye/gh-pages/colors-07708428.js')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Can't fetch: ${response.status}");
-        }
-        return response.text();
-    })
-    .then(moduleCode => {
-        eval(moduleCode);
-        const colorModule = window.colorModule;
-        const {
-            c: clamp,
-            l: lerp,
-            a: clamp01,
-            T: TypedMessenger,
-            M: MapLoadError,
-            B: BufferGeometry,
-            b: BufferAttribute,
-            d: Mesh,
-            O: Object3D,
-            e: Matrix4,
-            p: processedSkinNames,
-            t: traverseObject,
-            V: Vector3,
-            Q: Quaternion,
-            D: DoubleSide,
-            f: BackSide,
-            A: AdditiveBlending,
-            S: Scene,
-            P: PlaneGeometry,
-            C: Color,
-            g: ShaderMaterial,
-            F: FrontSide,
-            h: Box3,
-            i: Sphere,
-            j: Vector2,
-            k: PerspectiveCamera,
-            m: mod,
-            n: teamColors,
-            o: modMinMax,
-            E: Euler,
-            q: mapValue,
-            r: iLerp,
-            L: Line3,
-            s: LineBasicMaterial,
-            u: Line,
-            I: IcosahedronGeometry,
-            v: hsvToRgb,
-            w: rgbToHsv,
-            x: SphereGeometry,
-            y: Texture,
-            N: NearestFilter,
-            z: smoothClamp,
-            W: WebGLRenderer,
-            G: sRGBEncoding
-        } = colorModule;
+    .then(response => response.text())
+    .then(scriptContent => {
+        const scriptElement = document.createElement('script');
+        scriptElement.textContent = scriptContent;
+        scriptElement.type = 'module';
+        document.head.appendChild(scriptElement);
+
+        import('./colors-07708428.js').then(({
+             c: clamp,
+             l: lerp,
+             a: clamp01,
+             T: TypedMessenger,
+             M: MapLoadError,
+             B: BufferGeometry,
+             b: BufferAttribute,
+             d: Mesh,
+             O: Object3D,
+             e: Matrix4,
+             p: processedSkinNames,
+             t: traverseObject,
+             V: Vector3,
+             Q: Quaternion,
+             D: DoubleSide,
+             f: BackSide,
+             A: AdditiveBlending,
+             S: Scene,
+             P: PlaneGeometry,
+             C: Color,
+             g: ShaderMaterial,
+             F: FrontSide,
+             h: Box3,
+             i: Sphere,
+             j: Vector2,
+             k: PerspectiveCamera,
+             m: mod,
+             n: teamColors,
+             o: modMinMax,
+             E: Euler,
+             q: mapValue,
+             r: iLerp,
+             L: Line3,
+             s: LineBasicMaterial,
+             u: Line,
+             I: IcosahedronGeometry,
+             v: hsvToRgb,
+             w: rgbToHsv,
+             x: SphereGeometry,
+             y: Texture,
+             N: NearestFilter,
+             z: smoothClamp,
+             W: WebGLRenderer,
+             G: sRGBEncoding
+        }) => {
+        }).catch(error => {
+            console.error('Error importing module:', error);
+        });
     })
     .catch(error => {
-        console.error(error);
+        console.error('Error fetching or evaluating the script:', error);
     });
 
 !function () {

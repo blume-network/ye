@@ -2823,7 +2823,7 @@ class AssetsManager {
         const {
             worker: t
         }
-            = await import ('./assetWorkerPreload-5dfc9a21.js');
+            = await import ('./assetWorkerPreload-84640470.js');
         this.messenger.initialize(t, messengerResponseHandlers),
             t.addEventListener(
                 'error',
@@ -2871,7 +2871,7 @@ class AssetsManager {
         let s = null;
         if (t in this.packages) s = this.packages[t];
         else {
-            s = new AssetPackageLoader('assetPackages' + '/' + t + '.bin?v=1700663203'),
+            s = new AssetPackageLoader('assetPackages' + '/' + t + '.bin?v=1703979296'),
                 this.packages[t] = s;
             for (const t of this.onPackageAddCbs) t();
             this.onPackageAddCbs = []
@@ -9093,7 +9093,8 @@ class MapItemUi {
                 this.thumbContainer = document.createElement('div'),
                 this.thumbContainer.classList.add('map-item-thumb', 'wrinkled-paper-mask'),
                 this.el.appendChild(this.thumbContainer),
-                e.thumbLayers
+            e.thumbLayers &&
+            e.thumbLayers.length > 0
         ) for (const [i,
             n]of e.thumbLayers.entries()) {
             const s = `url("${ t.basePath }mapThumbs/${ e.assetName }/${ i }.webp")`,
@@ -9781,7 +9782,7 @@ class MatchMakingManager {
                             const e = await this.attemptSingleWsConnection();
                             if (e) return this.send({
                                 op: 'myClientVersion',
-                                version: '1700663203'
+                                version: '1703979296'
                             }),
                                 this.sendDownloadedMapHashes(),
                                 this.sendElo(),
@@ -10912,7 +10913,8 @@ class NetworkManager {
             SQUAD_DATA: 25,
             ACTIVE_WEAPON_TYPE: 26,
             MELEE_HIT_PLAYER: 27,
-            REQUEST_TEAM_SWITCH: 28
+            REQUEST_TEAM_SWITCH: 28,
+            DEFAULT_SPAWN_POSITIONS: 29
         }
     }
     static get FlagChangeOperation() {
@@ -11538,7 +11540,7 @@ class NetworkManager {
         this.sendStringMessage(t, i)
     }
     sendCurrentVersion() {
-        this.sendStringMessage(NetworkManager.SendAction.MY_CLIENT_VERSION, '1700663203')
+        this.sendStringMessage(NetworkManager.SendAction.MY_CLIENT_VERSION, '1703979296')
     }
     sendMyElo() {
         const t = new ArrayBuffer(12),
@@ -11627,6 +11629,21 @@ class NetworkManager {
     }
     * getDefaultFlagNetworkPositions(t) {
         for (const e of t.flags) yield this.mapWorldPosToNetworkPos(t, e.position.x, e.position.y, e.position.z)
+    }
+    getDefaultSpawnNetworkPositions(t) {
+        const e = [];
+        for (const i of t.spawnPositions) {
+            const n = [];
+            for (const {
+                pos: e
+            }
+                of i) {
+                const i = this.mapWorldPosToNetworkPos(t, e.x, e.y, e.z);
+                n.push(i)
+            }
+            e.push(n)
+        }
+        return e
     }
     mapWorldPosToNetworkPos(t, e, i, n) {
         const s = this.getWorldBounds(t);
@@ -11720,6 +11737,27 @@ class NetworkManager {
             n[3 * t + 2] = i[2];
         this.send(i)
     }
+    sendDefaultSpawnPositions(t) {
+        const e = this.getDefaultSpawnNetworkPositions(t);
+        if (0 == e.length) return;
+        if (3 != e.length) throw new Error('Assertion failed, unexpected spawn positions team count');
+        let i = 0;
+        i += 4;
+        for (const t of e) i += 1,
+            i += 6 * t.length;
+        const n = new ArrayBuffer(i),
+            s = new DataView(n);
+        let a = 0;
+        s.setUint32(a, NetworkManager.SendAction.DEFAULT_SPAWN_POSITIONS, !0),
+            a += 4;
+        for (const t of e) {
+            s.setUint8(a, t.length),
+                a++;
+            for (const e of t) for (const t of e) s.setUint16(a, t, !0),
+                a += 2
+        }
+        this.send(n)
+    }
     sendReportCheater(t, e, i) {
         i = normalizeU16(i),
             this.send([NetworkManager.SendAction.REPORT_CHEATER,
@@ -11756,10 +11794,11 @@ class NetworkManager {
             t,
             e])
     }
-    sendPlayerSpawn(t, e) {
+    sendPlayerSpawn(t, e, i) {
         this.send([NetworkManager.SendAction.SPAWN,
             t,
-            e])
+            e,
+            i])
     }
     sendChangeSelectedClass(t, e) {
         this.send([NetworkManager.SendAction.CHANGE_SELECTED_CLASS,
@@ -16778,20 +16817,21 @@ class Player {
         if (!this.hasOwnership) return;
         const {
                 pos: t,
-                rot: e
+                rot: e,
+                index: i
             }
                 = this.game.getSpawnPosition(this.teamId),
-            i = new Vector3(0, 0, 1);
-        i.applyQuaternion(e),
-            i.y = 0;
-        const n = new Vector3(0, 0, 1);
-        let s = i.angleTo(n);
-        n.cross(i).y < 0 &&
-        (s *= - 1),
+            n = new Vector3(0, 0, 1);
+        n.applyQuaternion(e),
+            n.y = 0;
+        const s = new Vector3(0, 0, 1);
+        let a = n.angleTo(s);
+        s.cross(n).y < 0 &&
+        (a *= - 1),
             this.dead = !1,
             this.deadFromFall = !1,
             this.currentSpawnId++,
-            getMainInstance().network.sendPlayerSpawn(this.id, this.currentSpawnId),
+            getMainInstance().network.sendPlayerSpawn(this.id, this.currentSpawnId, i),
             getMainInstance().renderer.renderWorthyEventHappened(),
             this.setPosition(t),
             this.resetDeadPoseWeights(),
@@ -16803,7 +16843,7 @@ class Player {
         this.game.gameStarted &&
         getMainInstance().adBanners.setPageVisibility('respawn', !0),
             this.updateMySelectedWeapon(),
-            this.lookRot.set(s, 0),
+            this.lookRot.set(a, 0),
             this.resetSmoothLookRot(),
             this.updateModelVisibility(),
             getMainInstance().cam.playerRespawned(),
@@ -20582,7 +20622,6 @@ class Game {
             this.gameEndShowStatsAfterRewardedDuration = 6,
             this.trackedMyPlayerScores = new Map,
             this.spawnPositions = [],
-            this.lobbypawnPositions = [],
             this.isForegroundGame = !1,
             this.gameStartTime = 0,
             this.gameStarted = !1,
@@ -20757,7 +20796,8 @@ class Game {
         t.network.sendCurrentLoadedMapHash(this.currentLoadedMapHash);
         this.physics.mapBounds &&
         t.network.sendWorldBounds(this),
-            t.network.sendDefaultFlagPositions(this)
+            t.network.sendDefaultFlagPositions(this),
+            t.network.sendDefaultSpawnPositions(this)
     }
     createPlayer(t, e) {
         const i = getMainInstance(),
@@ -21076,11 +21116,15 @@ class Game {
         let e;
         const i = this.spawnPositions[t];
         return i &&
-        (e = randFromArray(i)),
+        (e = randFromArray(i.map(((t, e) => ({
+            index: e,
+            ...t
+        }))))),
         e ||
         {
             pos: new Vector3,
-            rot: new Quaternion
+            rot: new Quaternion,
+            index: 0
         }
     }
     playerClaimedHitByArrow(t, e, i, n) {
@@ -21718,7 +21762,7 @@ class MainMenu {
         e.classList.add('bottom-texts', 'whiteBigText', 'blueNight'),
             this.el.appendChild(e);
         const i = document.createElement('li');
-        i.textContent = 'v1700663203',
+        i.textContent = 'v1703979296',
             e.appendChild(i);
         const n = document.createElement('li');
         e.appendChild(n);
@@ -23632,6 +23676,7 @@ class OfflineRoamingGame {
     }
     getSpawnPosition() {
         return {
+            index: 0,
             pos: new Vector3,
             rot: new Quaternion
         }
@@ -27998,11 +28043,11 @@ function init() {
     let t = '';
     if (window.Intl && Intl.RelativeTimeFormat) {
         const e = new Intl.RelativeTimeFormat,
-            i = Date.now() / 1000 - Number('1700663203');
+            i = Date.now() / 1000 - Number('1703979296');
         t = i < 60 ? e.format( - Math.floor(i), 'second') : i < 3600 ? e.format( - Math.floor(i / 60), 'minute') : i < 86400 ? e.format( - Math.floor(i / 60 / 60), 'hour') : i < 31536000 ? e.format( - Math.floor(i / 60 / 60 / 24), 'day') : e.format( - Math.floor(i / 60 / 60 / 24 / 365), 'year'),
             t = ' (' + t + ')'
     }
-    console.log('loading v1700663203' + t),
+    console.log('loading v1703979296' + t),
         main = new Main,
         main.init()
 }

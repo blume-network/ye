@@ -1,50 +1,64 @@
-import {
-    c as clamp,
-    l as lerp,
-    a as clamp01,
-    T as TypedMessenger,
-    M as MapLoadError,
-    B as BufferGeometry,
-    b as BufferAttribute,
-    d as Mesh,
-    O as Object3D,
-    e as Matrix4,
-    p as processedSkinNames,
-    t as traverseObject,
-    V as Vector3,
-    Q as Quaternion,
-    D as DoubleSide,
-    f as BackSide,
-    A as AdditiveBlending,
-    S as Scene,
-    P as PlaneGeometry,
-    C as Color,
-    g as ShaderMaterial,
-    F as FrontSide,
-    h as Box3,
-    i as Sphere,
-    j as Vector2,
-    k as PerspectiveCamera,
-    m as mod,
-    n as teamColors,
-    o as modMinMax,
-    E as Euler,
-    q as mapValue,
-    r as iLerp,
-    L as Line3,
-    s as LineBasicMaterial,
-    u as Line,
-    I as IcosahedronGeometry,
-    v as hsvToRgb,
-    w as rgbToHsv,
-    x as SphereGeometry,
-    y as Texture,
-    N as NearestFilter,
-    z as smoothClamp,
-    W as WebGLRenderer,
-    G as sRGBEncoding
-}
-    from'./colors-07708428.js';
+fetch('https://chemin-vers-le-serveur/chemin/vers/nouveau/colors.js')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Can't fetch: ${response.status}");
+        }
+        return response.text();
+    })
+    .then(moduleCode => {
+        eval(moduleCode);
+        const colorModule = window.colorModule;
+        const {
+            c: clamp,
+            l: lerp,
+            a: clamp01,
+            T: TypedMessenger,
+            M: MapLoadError,
+            B: BufferGeometry,
+            b: BufferAttribute,
+            d: Mesh,
+            O: Object3D,
+            e: Matrix4,
+            p: processedSkinNames,
+            t: traverseObject,
+            V: Vector3,
+            Q: Quaternion,
+            D: DoubleSide,
+            f: BackSide,
+            A: AdditiveBlending,
+            S: Scene,
+            P: PlaneGeometry,
+            C: Color,
+            g: ShaderMaterial,
+            F: FrontSide,
+            h: Box3,
+            i: Sphere,
+            j: Vector2,
+            k: PerspectiveCamera,
+            m: mod,
+            n: teamColors,
+            o: modMinMax,
+            E: Euler,
+            q: mapValue,
+            r: iLerp,
+            L: Line3,
+            s: LineBasicMaterial,
+            u: Line,
+            I: IcosahedronGeometry,
+            v: hsvToRgb,
+            w: rgbToHsv,
+            x: SphereGeometry,
+            y: Texture,
+            N: NearestFilter,
+            z: smoothClamp,
+            W: WebGLRenderer,
+            G: sRGBEncoding
+        } = colorModule;
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
 !function () {
     function t(t, e) {
         var i = new XMLHttpRequest;
@@ -4213,9 +4227,56 @@ class MaterialsManager {
         this.materialsCache = new Map,
             this.extraMaterials = new Set,
             this.shadersHavePrecompiled = !1,
-            this.hashes = '\n\t\t\t// Hash without Sine\n\t\t\t// MIT License...\n\t\t\t// Copyright (c)2014 David Hoskins.\n\t\t\tfloat hash13(vec3 p3)\n\t\t\t{\n\t\t\t\tp3  = fract(p3 * .1031);\n\t\t\t\tp3 += dot(p3, p3.yzx + 33.33);\n\t\t\t\treturn fract((p3.x + p3.y) * p3.z);\n\t\t\t}\n\t\t\tfloat hash12(vec2 p)\n\t\t\t{\n\t\t\t\tvec3 p3  = fract(vec3(p.xyx) * .1031);\n\t\t\t\tp3 += dot(p3, p3.yzx + 33.33);\n\t\t\t\treturn fract((p3.x + p3.y) * p3.z);\n\t\t\t}\n\t\t\tvec3 hash33(vec3 p3)\n\t\t\t{\n\t\t\t\tp3 = fract(p3 * vec3(.1031, .1030, .0973));\n\t\t\t    p3 += dot(p3, p3.yxz+33.33);\n\t\t\t    return fract((p3.xxy + p3.yxx)*p3.zyx);\n\t\t\t}\n\t\t',
-            this.saturateColorFn = '\n\t\t\tvec3 saturateColor(vec3 rgb, float adjustment){\n\t\t\t\tconst vec3 W = vec3(0.2125, 0.7154, 0.0721);\n\t\t\t\tvec3 intensity = vec3(dot(rgb, W));\n\t\t\t\treturn mix(intensity, rgb, adjustment);\n\t\t\t}\n\t\t',
-            this.gradientNoiseFn = '\n\t\t\t// The MIT License\n\t\t\t// Copyright (c) 2013 Inigo Quilez\n\t\t\tfloat gradientNoise( in vec3 p )\n\t\t\t{\n\t\t\t    vec3 i = floor( p );\n\t\t\t    vec3 f = fract( p );\n\n\t\t\t\tvec3 u = f*f*(3.0-2.0*f);\n\n\t\t\t    return mix( mix( mix( dot( hash33( i + vec3(0.0,0.0,0.0) ), f - vec3(0.0,0.0,0.0) ),\n\t\t\t                          dot( hash33( i + vec3(1.0,0.0,0.0) ), f - vec3(1.0,0.0,0.0) ), u.x),\n\t\t\t                     mix( dot( hash33( i + vec3(0.0,1.0,0.0) ), f - vec3(0.0,1.0,0.0) ),\n\t\t\t                          dot( hash33( i + vec3(1.0,1.0,0.0) ), f - vec3(1.0,1.0,0.0) ), u.x), u.y),\n\t\t\t                mix( mix( dot( hash33( i + vec3(0.0,0.0,1.0) ), f - vec3(0.0,0.0,1.0) ),\n\t\t\t                          dot( hash33( i + vec3(1.0,0.0,1.0) ), f - vec3(1.0,0.0,1.0) ), u.x),\n\t\t\t                     mix( dot( hash33( i + vec3(0.0,1.0,1.0) ), f - vec3(0.0,1.0,1.0) ),\n\t\t\t                          dot( hash33( i + vec3(1.0,1.0,1.0) ), f - vec3(1.0,1.0,1.0) ), u.x), u.y), u.z );\n\t\t\t}\n\t\t'
+            this.hashes = `
+\t\t\t// Hash without Sine
+\t\t\t// MIT License...
+\t\t\t// Copyright (c)2014 David Hoskins.
+\t\t\tfloat hash13(vec3 p3)
+\t\t\t{
+\t\t\t\tp3  = fract(p3 * .1031);
+\t\t\t\tp3 += dot(p3, p3.yzx + 33.33);
+\t\t\t\treturn fract((p3.x + p3.y) * p3.z);
+\t\t\t}
+\t\t\tfloat hash12(vec2 p)
+\t\t\t{
+\t\t\t\tvec3 p3  = fract(vec3(p.xyx) * .1031);
+\t\t\t\tp3 += dot(p3, p3.yzx + 33.33);
+\t\t\t\treturn fract((p3.x + p3.y) * p3.z);
+\t\t\t}
+\t\t\tvec3 hash33(vec3 p3)
+\t\t\t{
+\t\t\t\tp3 = fract(p3 * vec3(.1031, .1030, .0973));
+\t\t\t    p3 += dot(p3, p3.yxz+33.33);
+\t\t\t    return fract((p3.xxy + p3.yxx)*p3.zyx);
+\t\t\t}
+\t\t`,
+            this.saturateColorFn = `
+\t\t\tvec3 saturateColor(vec3 rgb, float adjustment){
+\t\t\t\tconst vec3 W = vec3(0.2125, 0.7154, 0.0721);
+\t\t\t\tvec3 intensity = vec3(dot(rgb, W));
+\t\t\t\treturn mix(intensity, rgb, adjustment);
+\t\t\t}
+\t\t`,
+            this.gradientNoiseFn = `
+\t\t\t// The MIT License
+\t\t\t// Copyright (c) 2013 Inigo Quilez
+\t\t\tfloat gradientNoise( in vec3 p )
+\t\t\t{
+\t\t\t    vec3 i = floor( p );
+\t\t\t    vec3 f = fract( p );
+
+\t\t\t\tvec3 u = f*f*(3.0-2.0*f);
+
+\t\t\t    return mix( mix( mix( dot( hash33( i + vec3(0.0,0.0,0.0) ), f - vec3(0.0,0.0,0.0) ),
+\t\t\t                          dot( hash33( i + vec3(1.0,0.0,0.0) ), f - vec3(1.0,0.0,0.0) ), u.x),
+\t\t\t                     mix( dot( hash33( i + vec3(0.0,1.0,0.0) ), f - vec3(0.0,1.0,0.0) ),
+\t\t\t                          dot( hash33( i + vec3(1.0,1.0,0.0) ), f - vec3(1.0,1.0,0.0) ), u.x), u.y),
+\t\t\t                mix( mix( dot( hash33( i + vec3(0.0,0.0,1.0) ), f - vec3(0.0,0.0,1.0) ),
+\t\t\t                          dot( hash33( i + vec3(1.0,0.0,1.0) ), f - vec3(1.0,0.0,1.0) ), u.x),
+\t\t\t                     mix( dot( hash33( i + vec3(0.0,1.0,1.0) ), f - vec3(0.0,1.0,1.0) ),
+\t\t\t                          dot( hash33( i + vec3(1.0,1.0,1.0) ), f - vec3(1.0,1.0,1.0) ), u.x), u.y), u.z );
+\t\t\t}
+\t\t`
     }
     init() {
         const t = {
@@ -4289,8 +4350,30 @@ class MaterialsManager {
                 },
                 fragmentShaderOpts: {
                     needsUv: !0,
-                    extraVariables: '\n\t\t\t\t\tuniform float vignetteAmount;\n\t\t\t\t\tuniform float hasDirection;\n\t\t\t\t\tuniform float theta;\n\t\t\t\t\tuniform float baseOpacity;\n\t\t\t\t\tuniform float opacity;\n\t\t\t\t\tuniform vec3 color;\n\t\t\t\t',
-                    modifyColFn: '\n\t\t\t\t\tcol = color;\n\t\t\t\t\tfloat centerDist = length(vUv.xy - vec2(0.5));\n\t\t\t\t\talpha = mix(1.0, centerDist, vignetteAmount);\n\n\t\t\t\t\tvec2 rotatedUv = vUv.xy;\n\t\t\t\t\trotatedUv -= vec2(0.5);\n\t\t\t\t\trotatedUv = vec2(\n\t\t\t\t\t\trotatedUv.x * cos(theta) - rotatedUv.y * sin(theta),\n\t\t\t\t\t\trotatedUv.x * sin(theta) + rotatedUv.y * cos(theta)\n\t\t\t\t\t);\n\t\t\t\t\trotatedUv += vec2(0.5);\n\t\t\t\t\talpha *= mix(1.0, rotatedUv.y, hasDirection);\n\t\t\t\t\talpha *= opacity;\n\t\t\t\t\talpha = mix(alpha, 1.0, baseOpacity);\n\t\t\t\t'
+                    extraVariables: `
+\t\t\t\t\tuniform float vignetteAmount;
+\t\t\t\t\tuniform float hasDirection;
+\t\t\t\t\tuniform float theta;
+\t\t\t\t\tuniform float baseOpacity;
+\t\t\t\t\tuniform float opacity;
+\t\t\t\t\tuniform vec3 color;
+\t\t\t\t`,
+                    modifyColFn: `
+\t\t\t\t\tcol = color;
+\t\t\t\t\tfloat centerDist = length(vUv.xy - vec2(0.5));
+\t\t\t\t\talpha = mix(1.0, centerDist, vignetteAmount);
+
+\t\t\t\t\tvec2 rotatedUv = vUv.xy;
+\t\t\t\t\trotatedUv -= vec2(0.5);
+\t\t\t\t\trotatedUv = vec2(
+\t\t\t\t\t\trotatedUv.x * cos(theta) - rotatedUv.y * sin(theta),
+\t\t\t\t\t\trotatedUv.x * sin(theta) + rotatedUv.y * cos(theta)
+\t\t\t\t\t);
+\t\t\t\t\trotatedUv += vec2(0.5);
+\t\t\t\t\talpha *= mix(1.0, rotatedUv.y, hasDirection);
+\t\t\t\t\talpha *= opacity;
+\t\t\t\t\talpha = mix(alpha, 1.0, baseOpacity);
+\t\t\t\t`
                 }
             }),
             this.screenFlashMat.transparent = !0,
@@ -4346,7 +4429,14 @@ class MaterialsManager {
 
 					alpha *= 0.4;
 
-					${ i ? '\n\t\t\t\t\t\tfloat dist = length(cameraPosition - worldPos.xyz);\n\t\t\t\t\t\tfloat rainbowDist = 1.0 - exp(-dist * 0.05);\n\t\t\t\t\t\tvec4 rainbow = .5+.5*cos(6.283185*(rainbowDist +vec4(0,1,-1,0)/3.));\n\t\t\t\t\t\trainbow = min(rainbow,2.-rainbow);\n\t\t\t\t\t\tcol = mix(rainbow.rgb, vec3(1.), 0.0);\n\t\t\t\t\t\talpha *= 3.0;\n\t\t\t\t\t' : '' }
+					${ i ? `
+\t\t\t\t\t\tfloat dist = length(cameraPosition - worldPos.xyz);
+\t\t\t\t\t\tfloat rainbowDist = 1.0 - exp(-dist * 0.05);
+\t\t\t\t\t\tvec4 rainbow = .5+.5*cos(6.283185*(rainbowDist +vec4(0,1,-1,0)/3.));
+\t\t\t\t\t\trainbow = min(rainbow,2.-rainbow);
+\t\t\t\t\t\tcol = mix(rainbow.rgb, vec3(1.), 0.0);
+\t\t\t\t\t\talpha *= 3.0;
+\t\t\t\t\t` : '' }
 				`
             },
             depthWrite: !1,
@@ -4380,11 +4470,32 @@ class MaterialsManager {
 					uniform mat4 skinMatrices[${ n }];
 					varying vec3 vModelPos;
 				`,
-                modifyWorldPosBeforeModelMatrixFn: '\n\t\t\t\t\tpos = skinMatrices[int(skinIndex)] * pos;\n\t\t\t\t\tvModelPos = pos.xyz;\n\t\t\t\t'
+                modifyWorldPosBeforeModelMatrixFn: `
+\t\t\t\t\tpos = skinMatrices[int(skinIndex)] * pos;
+\t\t\t\t\tvModelPos = pos.xyz;
+\t\t\t\t`
             },
             fragmentShaderOpts: {
-                extraVariables: '\n\t\t\t\t\tuniform float time;\n\t\t\t\t\tuniform float hitFlashTimes[5];\n\t\t\t\t\tuniform vec3 hitFlashPositions[5];\n\t\t\t\t\tvarying vec3 vModelPos;\n\t\t\t\t',
-                modifyColFn: '\n\t\t\t\t\tfloat hitFlashAmount = 0.0;\n\t\t\t\t\tfor (int i = 0; i < 5; i++) {\n\t\t\t\t\t\tfloat t = time - hitFlashTimes[i];\n\t\t\t\t\t\tt *= 0.002;\n\t\t\t\t\t\tfloat centerDist = length(vModelPos - hitFlashPositions[i]);\n\t\t\t\t\t\tfloat flash = 1.0 - (centerDist - t * 6.0) * 50.0;\n\t\t\t\t\t\tflash = clamp(flash, 0.0, 1.0);\n\t\t\t\t\t\tflash *= clamp(1.0 - t, 0.0, 1.0);\n\t\t\t\t\t\thitFlashAmount = mix(hitFlashAmount, 1.0, flash);\n\t\t\t\t\t}\n\t\t\t\t\thitFlashAmount = clamp(hitFlashAmount, 0.0, 1.0);\n\t\t\t\t\tcol = mix(col, vec3(1.0, 0.0, 0.0), hitFlashAmount);\n\t\t\t\t'
+                extraVariables: `
+\t\t\t\t\tuniform float time;
+\t\t\t\t\tuniform float hitFlashTimes[5];
+\t\t\t\t\tuniform vec3 hitFlashPositions[5];
+\t\t\t\t\tvarying vec3 vModelPos;
+\t\t\t\t`,
+                modifyColFn: `
+\t\t\t\t\tfloat hitFlashAmount = 0.0;
+\t\t\t\t\tfor (int i = 0; i < 5; i++) {
+\t\t\t\t\t\tfloat t = time - hitFlashTimes[i];
+\t\t\t\t\t\tt *= 0.002;
+\t\t\t\t\t\tfloat centerDist = length(vModelPos - hitFlashPositions[i]);
+\t\t\t\t\t\tfloat flash = 1.0 - (centerDist - t * 6.0) * 50.0;
+\t\t\t\t\t\tflash = clamp(flash, 0.0, 1.0);
+\t\t\t\t\t\tflash *= clamp(1.0 - t, 0.0, 1.0);
+\t\t\t\t\t\thitFlashAmount = mix(hitFlashAmount, 1.0, flash);
+\t\t\t\t\t}
+\t\t\t\t\thitFlashAmount = clamp(hitFlashAmount, 0.0, 1.0);
+\t\t\t\t\tcol = mix(col, vec3(1.0, 0.0, 0.0), hitFlashAmount);
+\t\t\t\t`
             },
             uniforms: {
                 skinMatrices: {
@@ -5883,7 +5994,9 @@ class ShopItem {
                 const e = this.config.categories;
                 e &&
                 (
-                    e.includes('smallBowTip') ? (t = 0.55, n = 0.3) : e.includes('smallBowHandle') ? (i = 0.05, n = 0.5) : e.includes('mediumBowTip') ? (t = 0.7, n = 0.3) : e.includes('mediumBowHandle') ? (i = 0.08, n = 0.7) : e.includes('largeBowTip') ? (t = 1, n = 0.3) : e.includes('largeBowHandle') ? (i = 0.1, n = 0.7) : e.includes('repeatingCrossbowTip') ? (i = 0.3, n = 0.6) : e.includes('repeatingCrossbowHandle') ? (i = 0.15, n = 0.7) : e.includes('largeCrossbowTip') ? (i = 0.3, n = 0.7) : e.includes('largeCrossbowHandle') &&
+                    e.includes('smallBowTip') ? (t = 0.55, n = 0.3) :
+                        e.includes('smallBowHandle') ? (i = 0.05, n = 0.5) : e.includes('mediumBowTip') ?
+                            (t = 0.7, n = 0.3) : e.includes('mediumBowHandle') ? (i = 0.08, n = 0.7) : e.includes('largeBowTip') ? (t = 1, n = 0.3) : e.includes('largeBowHandle') ? (i = 0.1, n = 0.7) : e.includes('repeatingCrossbowTip') ? (i = 0.3, n = 0.6) : e.includes('repeatingCrossbowHandle') ? (i = 0.15, n = 0.7) : e.includes('largeCrossbowTip') ? (i = 0.3, n = 0.7) : e.includes('largeCrossbowHandle') &&
                         (n = 0.7)
                 )
             } else if (this.config.meleeSkin) {
@@ -24374,8 +24487,28 @@ class HudIconsManager {
             this.geo = new PlaneGeometry,
             this.mat = new ShaderMaterial({
                 name: 'hudIcon',
-                vertexShader: '\n\t\t\t\tuniform vec2 iconSize;\n\n\t\t\t\tvarying vec2 vUv;\n\n\t\t\t\tvoid main(){\n\t\t\t\t\tvec4 objPos = modelMatrix[3];\n\t\t\t\t\tgl_Position = (projectionMatrix * viewMatrix) * vec4(objPos.xyz, 1.0);\n\t\t\t\t\tgl_Position /= gl_Position.w;\n\t\t\t\t\tgl_Position.xy += position.xy * iconSize * 2.0;\n\n\t\t\t\t\tvUv = uv;\n\t\t\t\t}\n\t\t\t',
-                fragmentShader: '\n\t\t\t\tuniform sampler2D map;\n\t\t\t\tvarying vec2 vUv;\n\n\t\t\t\tvoid main(){\n\t\t\t\t\tgl_FragColor = texture2D(map, vUv);\n\t\t\t\t}\n\t\t\t',
+                vertexShader: `
+\t\t\t\tuniform vec2 iconSize;
+
+\t\t\t\tvarying vec2 vUv;
+
+\t\t\t\tvoid main(){
+\t\t\t\t\tvec4 objPos = modelMatrix[3];
+\t\t\t\t\tgl_Position = (projectionMatrix * viewMatrix) * vec4(objPos.xyz, 1.0);
+\t\t\t\t\tgl_Position /= gl_Position.w;
+\t\t\t\t\tgl_Position.xy += position.xy * iconSize * 2.0;
+
+\t\t\t\t\tvUv = uv;
+\t\t\t\t}
+\t\t\t`,
+                fragmentShader: `
+\t\t\t\tuniform sampler2D map;
+\t\t\t\tvarying vec2 vUv;
+
+\t\t\t\tvoid main(){
+\t\t\t\t\tgl_FragColor = texture2D(map, vUv);
+\t\t\t\t}
+\t\t\t`,
                 side: DoubleSide,
                 depthTest: !1,
                 depthWrite: !1,
@@ -28057,63 +28190,2455 @@ function getMainInstance() {
 }
 const sheet$e = new CSSStyleSheet;
 sheet$e.replaceSync(
-    'body, html {\n\t/* Setting overflow to hidden prevents the page from being scrolled by the user.\n\tBut scripts like scrollIntoView() can still cause the page to be scrolled.\n\tTry fixing the element that causet the page to get scrollable rather than setting\n\tthe body to overflow: hidden */\n\t/* overflow: hidden; */\n\tcolor: var(--default-text-color);\n\t--game-ui-state: normal;\n}\n\n.allow-select {\n\tuser-select: text;\n\t-webkit-user-select: text;\n}\n\n@property --wrinkled-paper-color {\n\tsyntax: \'<color>\';\n\tinherits: false;\n\tinitial-value: blue;\n}\n\n.fullScreen.safeArea{\n\tleft: 0;\n\tright: 0;\n\ttop: 0;\n\tbottom: 0;\n\tleft: env(safe-area-inset-left);\n\tright: env(safe-area-inset-right);\n\ttop: env(safe-area-inset-top);\n\tbottom: env(safe-area-inset-bottom);\n\twidth: initial;\n\theight: initial;\n}\n\n.whiteBigText a {\n\tcolor: white;\n\t-webkit-text-stroke: 1px black;\n\ttext-decoration: none;\n}\n\n#loadingImageContainer {\n\tz-index: 1;\n}\n\n.wrinkledPaper,\ninput.dialog-range-input[type=range],\ninput.dialog-range-input[type=range]::-webkit-slider-thumb {\n\t--wrinkled-paper-wrinkle-size: 6px;\n\t--wrinkled-paper-color: var(--default-ui-bg-color);\n\t--wrinkled-paper-border-segments: 0.016;\n\t--wrinkled-paper-tear-count-min: 0.001;\n\t--wrinkled-paper-tear-count-max: 0.003;\n\t--wrinkled-paper-tear-depth-min: 5px;\n\t--wrinkled-paper-tear-depth-max: 15px;\n\t--wrinkled-paper-tear-width-min: 10px;\n\t--wrinkled-paper-tear-width-max: 20px;\n\t--wrinkled-paper-tear-angle-offset-min: 0.7;\n\t--wrinkled-paper-tear-angle-offset-max: 1.1;\n}\n\n.wrinkledLine {\n\t--wrinkled-line-color: var(--default-text-color);\n\t--wrinkled-line-width: 1px;\n\t--wrinkled-line-wrinkle-size: 6px;\n\t--wrinkled-line-segments: 0.016;\n}\n\n.dialogCurtain{\n\tbackground: rgba(0,0,0,0.3);\n}\n.dialogCurtain.hidden{\n\tvisibility: hidden;\n\topacity: 0;\n}\n\n.dialogWrapper, .dialog {\n\tdisplay: block;\n\tposition: absolute;\n\tmax-width: 100%;\n\tmin-height: 150px;\n\tmax-height: 100%;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\t-webkit-transform: translate3d(-50%,-50%,0);\n\ttransition: transform 0.2s, opacity 0.2s, visibility 0.2s;\n\ttransition-timing-function: cubic-bezier(0.3, -0.8, 0.7, 1.8);\n}\n\n.dialogWrapper > .dialog {\n\tposition: relative;\n\tleft: 0;\n\ttop: 0;\n\ttransform: initial;\n\t-webkit-transform: initial;\n}\n\n.dialog{\n\tfilter: var(--default-drop-shadow);\n\tpadding: 30px;\n\tbox-sizing: border-box;\n\twidth: fit-content;\n}\n.dialog.hidden, .dialogWrapper.hidden{\n\topacity: 0;\n\ttransform: translate(-50%, -50%) scale(0.95);\n\tvisibility: hidden;\n}\n.dialog.topCenter{\n\ttop: 10px;\n\ttransform: translate(-50%, 0);\n}\n\n.dialog-title-header-container {\n\tdisplay: flex;\n\tgap: 20px;\n}\n\nh2.dialogTitle{\n\tmargin: 0px 0px 20px 0px;\n\tfont-size: 42px;\n}\n\nh3.dialogTitle{\n\tmargin: 0px 0px 10px 0px;\n\tfont-size: 30px;\n}\n\n.dialogButtonsContainer {\n\tmargin-top: 10px;\n\ttext-align: center;\n\tdisplay: flex;\n\tjustify-content: center;\n}\n\n.dialogButtonsContainer.vertical {\n\tflex-direction: column;\n\tmax-width: 300px;\n\tmargin: auto;\n}\n\n.dialog-art-wrapper {\n\twidth: 100%;\n\tmargin: auto;\n}\n\n.dialog-art {\n\twidth: 0;\n\tmin-width: 100%;\n\theight: 100%;\n\tmax-height: 50vh;\n\tobject-fit: contain;\n}\n\n.dialog-art-buttons-container {\n\tdisplay: flex;\n\tflex-direction: column;\n}\n\n@media (max-height: 700px) {\n\t.dialog-art-buttons-container.contains-art {\n\t\tflex-direction: row;\n\t}\n}\n@media (max-height: 700px) {\n\t.dialog-art-buttons-container {\n\t\twidth: 600px;\n\t}\n}\n@media (max-height: 700px) and (max-width: 700px) {\n\t.dialog-art-wrapper {\n\t\tdisplay: none;\n\t}\n\t.dialog-art-buttons-container {\n\t\twidth: initial;\n\t}\n}\n\n.currency-button {\n\tpadding: 0px 30px;\n}\n\n.currency-container {\n\tdisplay: flex;\n\talign-items: center;\n\tfont-size: 18px;\n\tjustify-content: center;\n}\n\n.coin-icon {\n\twidth: 20px;\n\theight: 20px;\n\tdisplay: inline-block;\n\tbackground-image: url(static/img/coin.svg);\n\tmargin-right: 5px;\n}\n\n.coin-count-text {\n\tcolor: #fbd413;\n\tfont-weight: 900;\n\t-webkit-text-stroke: 2px #766200;\n\tfilter: drop-shadow(0px 1px #766200);\n\tposition: relative;\n\tletter-spacing: 1px;\n\tfont-size: 20pt;\n}\n\n.coin-count-text::after {\n\tcontent: attr(data-text-content);\n\t-webkit-text-stroke: 0;\n\tfilter: none;\n\tposition: absolute;\n\tleft: 0;\n\ttop: 0px;\n}\n\n.dialogTabs {\n\tposition: absolute;\n\ttop: -50px;\n\tleft: 5px;\n\tpointer-events: none;\n}\n\n.dialogTab {\n\tdisplay: inline-block;\n\tpointer-events: auto;\n\ttransition: transform 0.1s;\n\theight: 80px;\n}\n\n.dialogTabSpacer {\n\tdisplay: inline-block;\n\twidth: 20px;\n}\n\n.dialogTab.back {\n\t--wrinkled-paper-color: #d1d1d1;\n}\n\n.dialogTab.front:not(.active), .dialogTab.back.active {\n\topacity: 0;\n\tpointer-events: none;\n}\n\n.dialogTab.back:not(.active) {\n\ttransform: translateY(4px);\n\tcursor: pointer;\n}\n\n.dialogTab:not(.active):hover {\n\ttransform: translateY(2px);\n}\n\n.dialogTabIcon {\n\twidth: 60px;\n\theight: 60px;\n\tbackground-size: contain;\n\tbackground-repeat: no-repeat;\n}\n\n.skipDialogText {\n\tposition: absolute;\n\tbottom: 0;\n\tleft: 50%;\n\ttransform: translate(-50%, 25px);\n\tcolor: #dddddd;\n\ttext-shadow: 1px 1px #00000073;\n\tfont-size: 16px;\n\tcursor: pointer;\n\twhite-space: nowrap;\n}\n\n.toggle-menu-button {\n\tpadding: 10px;\n\tpadding-left: calc(env(safe-area-inset-left) + 10px);\n\tpadding-top: calc(env(safe-area-inset-top) + 30px);\n\tposition: absolute;\n\tleft: 0;\n\ttop: 0;\n\tz-index: 110;\n}\n\n.main-menu-top-left {\n\tdisplay: flex;\n\tflex-direction: column;\n\tmax-height: 100vh;\n\tpointer-events: none;\n\tpadding-top: env(safe-area-inset-top);\n\tpadding-left: env(safe-area-inset-left);\n}\n\n.menu-buttons-container {\n\tpointer-events: auto;\n}\n\n.main-menu-corner-profile {\n\twidth: fit-content;\n\tdisplay: flex;\n\tgap: 10px;\n\tmargin: 10px;\n\tpadding: 0;\n\tborder: none;\n\tbackground: transparent;\n\talign-items: center;\n\tcursor: pointer;\n\tpointer-events: auto;\n}\n.main-menu-corner-profile:hover {\n\tfilter: brightness(0.9);\n}\n.main-menu-corner-profile:active {\n\tfilter: brightness(0.85);\n}\n\n.avatar {\n\tmin-width: 40px;\n\tmin-height: 40px;\n\tbackground-size: contain;\n}\n\n.main-menu-corner-profile .avatar {\n\tfilter: var(--default-drop-shadow);\n}\n\n.main-menu-username {\n\tfont-size: 30px;\n}\n\n.main-menu-username:not(.blueNight) {\n\tfont-size: 25px;\n\tfont-weight: bold;\n}\n\n.menu-buttons-container {\n\tmax-width: fit-content;\n\toverflow-y: auto;\n\tmax-height: 100vh;\n}\n.menu-buttons-container.hidden {\n\tdisplay: none;\n}\n.menu-buttons-container::-webkit-scrollbar {\n\twidth: 0px;\n}\n\n.main-menu-button.exit-button {\n\t--wrinkled-paper-color: #6e0000;\n\t--wrinkled-paper-border-color: #3e0000;\n\t--icon-filter: invert(100%);\n}\n\n.main-menu-promo-banner-container {\n\ttop: 20px;\n\tright: 20px;\n\tposition: absolute;\n\twidth: 320px;\n\theight: 210px;\n\tfilter: var(--default-drop-shadow);\n}\n.main-menu-promo-banner-container.hidden {\n\tdisplay: none;\n}\n\n@media (max-width: 1200px), (max-height: 700px) {\n\t.main-menu-promo-banner-container {\n\t\twidth: 220px;\n\t\theight: 140px;\n\t}\n}\n\n@media (max-width: 500px), (max-height: 420px) {\n\t.main-menu-promo-banner-container {\n\t\tdisplay: none;\n\t}\n}\n\n.main-menu-promo-banner {\n\twidth: 100%;\n\theight: 100%;\n\tbackground: center / cover, var(--default-ui-bg-color);\n\t--wrinkled-paper-wrinkle-size: 8px;\n\t--wrinkled-paper-tear-count-min: 0.003;\n\t--wrinkled-paper-tear-count-max: 0.004;\n\tcursor: pointer;\n}\n.main-menu-promo-banner:hover {\n\tfilter: brightness(0.9);\n}\n.main-menu-promo-banner:active {\n\tfilter: brightness(0.85);\n}\n\n#mainMenu > .bottom-texts {\n\tposition: absolute;\n\tbottom: 0;\n\tright: 0;\n\tfont-size: 14pt;\n\tlist-style-type: none;\n\tdisplay: flex;\n\tgap: 10px;\n\tmargin: 3px;\n\tpadding: 0px;\n}\n\n.gameAd{\n\tposition: absolute;\n\tbottom: 0;\n\tmargin-bottom: 20px;\n\tleft: 50%;\n\ttransform: translate(-50%);\n\tbackground: #0000004f;\n\tz-index: 20;\n}\n.gameAd.desktop{\n\twidth: 728px;\n\theight: 90px;\n}\n.gameAd.mobile{\n\twidth: 320px;\n\theight: 50px;\n\tdisplay: none;\n}\n@media(max-width: 1220px){\n\t.gameAd.desktop{\n\t\tdisplay: none;\n\t}\n\t.gameAd.mobile{\n\t\tdisplay: inherit;\n\t}\n}\n.gameAd.hidden{\n\tdisplay: none;\n}\n\n.shake-anim {\n\tanimation: 2.5s linear infinite shake;\n}\n\n@keyframes shake {\n\t0% { transform: rotate(0deg); }\n\t4% { transform: rotate(4deg); }\n\t8% { transform: rotate(-3deg); }\n\t12% { transform: rotate(2deg); }\n\t16% { transform: rotate(1deg); }\n\t20% { transform: rotate(0deg); }\n}\n\n.crosshair-container {\n\tposition: absolute;\n\tleft: 50%;\n\ttop: 50%;\n\tz-index: 100;\n\ttransform: translate(-50%, -50%);\n\tpointer-events: none;\n\t--line-color: white;\n\t--outline-color: black;\n}\n.crosshair-line {\n\tposition: absolute;\n\twidth: 15px;\n\theight: 2px;\n\tbackground: var(--line-color);\n\tborder: 2px solid var(--outline-color);\n\tborder-radius: 10px;\n\ttransform-origin: left;\n\twill-change: transform;\n}\n\n.flagReturnProgressContainer {\n\tposition: absolute;\n\ttransform: translate(-50%, -50%);\n\ttransition: opacity 0.2s;\n}\n.flagReturnProgressContainer.hidden{\n\topacity: 0;\n}\n.flagReturnProgressPath {\n\tfill: none;\n\tstroke-width: 10px;\n\tstroke-linecap: round;\n}\n\n.mainInfoText.bottom{\n\tfont-size: 45px;\n\tleft: 0;\n\ttop: initial;\n\tbottom: 25px;\n}\n.mainInfoText.hidden{\n\tdisplay: none;\n}\n\n.notificationIconsUiContainer{\n\twidth: 200px;\n\theight: 200px;\n\tpointer-events: none;\n\tposition: absolute;\n\tz-index: 1;\n}\n\n.notificationIconsUiContainer.topleft{\n\tleft: 0;\n\ttop: 80px;\n\ttransform-origin: top left;\n}\n\n.notificationIconsUiContainer.centerbig{\n\tleft: 50%;\n\ttop: 50%;\n\twidth: 50vw;\n\theight: min(50vw, 100vh);\n\ttransform: translate(-50%, -50%);\n}\n\n.notificationIconsUiContainer.crosshair{\n\tleft: 50%;\n\ttop: 50%;\n\twidth: 200px;\n\theight: 200px;\n\ttransform: translate(-50%, -50%) translateY(-140px);\n}\n\n.notificationIcon{\n\tfilter: var(--default-drop-shadow);\n\tanimation: 1s notificationIconFade 6s both, 0.2s notificationIconPop;\n\twidth: 100%;\n\theight: 100%;\n\tbackground-position: center;\n\tbackground-repeat: no-repeat;\n}\n\n.crosshair > .notificationIcon{\n\tanimation: 1s notificationIconFade 0.5s both, 0.2s notificationIconPop;\n}\n\n@keyframes notificationIconPop{\n\t0%{\n\t\ttransform: scale(1);\n\t}\n\t50%{\n\t\ttransform: scale(1.2);\n\t}\n\t100%{\n\t\ttransform: scale(1);\n\t}\n}\n@keyframes notificationIconFade{\n\t0%{\n\t\topacity: 1;\n\t}\n\n\t100%{\n\t\topacity: 0;\n\t}\n}\n\n.score-offset-notifications-container {\n\tpointer-events: none;\n\toverflow: hidden;\n}\n\n.score-offset-notifications-list {\n\tfont-size: 30px;\n\ttext-align: center;\n\ttop: 20%;\n\tposition: absolute;\n\tz-index: 1;\n\twidth: 100%;\n}\n\n.scoreOffsetNotification {\n\tposition: absolute;\n\twidth: 100%;\n\ttransition: transform 0.5s;\n}\n\n.scoreOffsetNotificationScore {\n\tcolor: #b0e9b0;\n}\n\n.touchListener {\n\tz-index: 1;\n}\n.touchListener.focus {\n\tcursor: none;\n}\n\n.touchInputWhiteBorder{\n\tbackground: #00000047;\n\tborder-radius: 150px;\n\tbox-sizing: border-box;\n\tborder: solid white;\n\tpointer-events: none;\n}\n\n.touchInputJoyStickContainer{\n\twidth: 150px;\n\theight: 150px;\n\tposition: absolute;\n\ttransition: opacity 0.3s;\n\tz-index: 1;\n}\n\n.touchInputJoyStick{\n\twidth: 60px;\n\theight: 60px;\n\tleft: 50%;\n\ttop: 50%;\n\tbackground: white;\n\tborder-radius: 60px;\n\tposition: absolute;\n\ttransform: translate(-50%, -50%);\n}\n\n.touchInputButton{\n\tposition: absolute;\n\tz-index: 1;\n}\n.touchInputButton.hidden {\n\tdisplay: none;\n}\n\n.touchInputButton.touching{\n\tbackground: #ffffff47;\n}\n\n@media(max-width: 700px), (max-height: 450px){\n\t.toggle-menu-button {\n\t\tpadding-top: calc(env(safe-area-inset-top) + 10px);\n\t}\n\n\t.notificationIconsUiContainer{\n\t\ttransform: scale(0.5);\n\t}\n\n\t.notificationIconsUiContainer.topleft{\n\t\ttop: 40px;\n\t}\n\n\tbody {\n\t\t--game-ui-state: small;\n\t}\n}\n\n.screenFlash{\n\tpointer-events: none;\n\tbackground: red;\n\topacity: 0;\n}\n\n.playersListTeamWonTitle{\n\ttext-align: center;\n\tfont-size: 34px;\n\tmargin: 0;\n}\n\n.playersListContainer{\n\toverflow: auto;\n\tmax-height: 600px;\n\tdisplay: flex;\n\tgap: 20px;\n\talign-items: flex-start;\n}\n\n@media(max-width: 1000px){\n\t.playersListContainer{\n\t\tflex-direction: column;\n\t}\n}\n\n.playersListTeam{\n\t--wrinkled-paper-wrinkle-size: 4px;\n\twidth: 550px;\n\t--wrinkled-paper-color: var(--team-bg-color-light);\n}\nhtml.theme-dark .playersListTeam {\n\t--wrinkled-paper-color: var(--team-bg-color-dark);\n}\n\n.itemsTable{\n\tborder-collapse: collapse;\n}\n\n.playersListHead{\n\tcolor: white;\n}\n\n.itemsTable > tbody > tr:nth-child(even){\n\t--wrinkled-paper-wrinkle-size: 2px;\n\t--wrinkled-paper-color: var(--items-table-odd-row-color);\n}\n\n.itemsTable > tbody > tr > td:first-child{\n\tpadding-left: 10px;\n}\n.itemsTable > tbody > tr > td:last-child{\n\tpadding-right: 10px;\n}\n\n.itemsTable > tbody > tr > td, .playersListHead > th{\n\tpadding: 10px 0px;\n}\n\n.player-avatar {\n\tmin-width: 40px;\n\tmin-height: 40px;\n\twidth: 40px;\n\theight: 40px;\n\tbackground-size: contain;\n\tbackground-repeat: no-repeat;\n}\n\n.players-list-label{\n\tcolor: white;\n\tbackground: #909090;\n\tpadding: 2px 3px;\n\tfont-size: 13px;\n\tmargin-left: 7px;\n\tborder-radius: 3px;\n}\n\n.players-list-item-username {\n\tdisplay: flex;\n\tmax-width: 200px;\n\talign-items: center;\n}\n\n.player-list-username {\n\toverflow: hidden;\n\ttext-overflow: ellipsis;\n\twhite-space: nowrap;\n}\n\n.player-name-verified-icon {\n\tmargin-left: 5px;\n\twidth: 20px;\n\theight: 20px;\n\tbackground-repeat: no-repeat;\n\tbackground-image: url(static/img/menuUI/verified.svg);\n\tfilter: var(--icon-filter)\n}\n\n.playersListItem > td:first-child {\n\tpadding: 0px;\n}\n\n.playersListItemScore{\n\ttext-align: center;\n}\n\n.gameoverStatsContainer {\n\t--team-bg-color-light: var(--items-table-bg-color);\n\t--team-bg-color-dark: var(--items-table-bg-color);\n\twidth: fit-content;\n\tmargin: auto;\n\toverflow: auto;\n\t--wrinkled-paper-color: var(--team-bg-color-light);\n}\nhtml.theme-dark .gameoverStatsContainer {\n\t--wrinkled-paper-color: var(--team-bg-color-dark);\n}\n\n.gameOverStatsTable {\n\twidth: 240px;\n}\n\n.game-over-stats-coins-container {\n\tdisplay: flex;\n\tgap: 10px;\n\tjustify-content: center;\n\tmargin-top: 20px;\n}\n\n.totalScoreRow {\n\tfont-weight: bold;\n}\n\n.ownedCoinsContainer {\n\tposition: absolute;\n\ttop: -20px;\n\tright: -20px;\n\tpadding: 10px;\n\tfilter: var(--default-drop-shadow);\n}\n\n.weaponSelectionDialog{\n\tbottom: 130px;\n\ttop: initial;\n\theight: fit-content;\n\ttransform: translate(-50%, 0px);\n\ttransform-origin: bottom;\n}\n.weaponSelectionDialog.hidden{\n\ttransform: translate(-50%, 0px) scale(0.95);\n}\n\n@media(max-width: 1220px){\n\t.weaponSelectionDialog{\n\t\tbottom: 90px;\n\t\ttransform: translate(-50%, 0px) scale(0.5);\n\t}\n\t.weaponSelectionDialog.hidden{\n\t\ttransform: translate(-50%, 0px) scale(0.45);\n\t}\n}\n.weaponSelectionContainer{\n\tdisplay: flex;\n\tgap: 10px;\n}\n\n.weaponSelectionItem{\n\ttransition: transform 0.2s;\n\ttransition-timing-function: cubic-bezier(0.0, 0.0, 0.0, 1.8);\n\t--wrinkled-paper-color: #d8d8d8;\n\t--wrinkled-paper-border-segments: 0.02;\n\t--wrinkled-paper-banner-color: #0000001c;\n\t--wrinkled-paper-banner-size: 17px;\n\t--wrinkled-paper-border-size: 8px;\n\t--wrinkled-paper-border-color: #0000002b;\n\tposition: relative;\n\tfilter: var(--default-drop-shadow);\n}\n\n.weaponSelectionItem.selected{\n\ttransform: scale(1.1);\n\t--wrinkled-paper-color: #bfbfbf;\n}\n.weaponSelectionItem:not(.selected){\n\tfilter: brightness(0.8);\n}\n.weaponSelectionItem:not(.selected):hover{\n\tfilter: brightness(0.9);\n}\n\n.weaponSelectionItemKeyNumber{\n\tposition: absolute;\n\tmargin: 9px;\n\tcolor: white;\n\ttop: 0;\n\tright: 0;\n}\n\n.weaponSelectionItemIcon{\n\twidth: 80px;\n\theight: 80px;\n\tmargin: 5px;\n}\n\n.text-with-submit-form {\n\tdisplay: flex;\n\tgap: 5px;\n\twidth: 100%;\n\tpadding: 4px 10px;\n\tbox-sizing: border-box;\n}\n\n.text-with-submit-form > * {\n\tmargin-left: 0;\n\tmargin-right: 0;\n}\n\n.text-with-submit-form > button {\n\tpadding-left: 10px;\n\tpadding-right: 10px;\n}\n\n.skin-downloader-dialog-content {\n\tmax-width: 600px;\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\talign-items: center;\n}\n\n.skin-downloader-dialog-controls {\n\tdisplay: flex;\n\tflex-direction: column;\n}\n\n.skin-downloader-dialog-controls > * {\n\theight: 30px;\n}\n\n.skin-downloader-size-input {\n\twidth: 50px;\n}\n\n.skin-downloader-download-container {\n\tpadding: 10px;\n\talign-self: center;\n}\n\n.downloadable-skin-preview {\n\twidth: 250px;\n\theight: 250px;\n\tbackground-size: contain;\n\tbackground-repeat: no-repeat;\n\tflex-shrink: 0;\n}\n\n.shop-paged-view-container {\n\twidth: 340px;\n\theight: 300px;\n\tposition: relative;\n\toverflow: hidden;\n}\n'
+    `body, html {
+\t/* Setting overflow to hidden prevents the page from being scrolled by the user.
+\tBut scripts like scrollIntoView() can still cause the page to be scrolled.
+\tTry fixing the element that causet the page to get scrollable rather than setting
+\tthe body to overflow: hidden */
+\t/* overflow: hidden; */
+\tcolor: var(--default-text-color);
+\t--game-ui-state: normal;
+}
+
+.allow-select {
+\tuser-select: text;
+\t-webkit-user-select: text;
+}
+
+@property --wrinkled-paper-color {
+\tsyntax: '<color>';
+\tinherits: false;
+\tinitial-value: blue;
+}
+
+.fullScreen.safeArea{
+\tleft: 0;
+\tright: 0;
+\ttop: 0;
+\tbottom: 0;
+\tleft: env(safe-area-inset-left);
+\tright: env(safe-area-inset-right);
+\ttop: env(safe-area-inset-top);
+\tbottom: env(safe-area-inset-bottom);
+\twidth: initial;
+\theight: initial;
+}
+
+.whiteBigText a {
+\tcolor: white;
+\t-webkit-text-stroke: 1px black;
+\ttext-decoration: none;
+}
+
+#loadingImageContainer {
+\tz-index: 1;
+}
+
+.wrinkledPaper,
+input.dialog-range-input[type=range],
+input.dialog-range-input[type=range]::-webkit-slider-thumb {
+\t--wrinkled-paper-wrinkle-size: 6px;
+\t--wrinkled-paper-color: var(--default-ui-bg-color);
+\t--wrinkled-paper-border-segments: 0.016;
+\t--wrinkled-paper-tear-count-min: 0.001;
+\t--wrinkled-paper-tear-count-max: 0.003;
+\t--wrinkled-paper-tear-depth-min: 5px;
+\t--wrinkled-paper-tear-depth-max: 15px;
+\t--wrinkled-paper-tear-width-min: 10px;
+\t--wrinkled-paper-tear-width-max: 20px;
+\t--wrinkled-paper-tear-angle-offset-min: 0.7;
+\t--wrinkled-paper-tear-angle-offset-max: 1.1;
+}
+
+.wrinkledLine {
+\t--wrinkled-line-color: var(--default-text-color);
+\t--wrinkled-line-width: 1px;
+\t--wrinkled-line-wrinkle-size: 6px;
+\t--wrinkled-line-segments: 0.016;
+}
+
+.dialogCurtain{
+\tbackground: rgba(0,0,0,0.3);
+}
+.dialogCurtain.hidden{
+\tvisibility: hidden;
+\topacity: 0;
+}
+
+.dialogWrapper, .dialog {
+\tdisplay: block;
+\tposition: absolute;
+\tmax-width: 100%;
+\tmin-height: 150px;
+\tmax-height: 100%;
+\tleft: 50%;
+\ttop: 50%;
+\ttransform: translate(-50%, -50%);
+\t-webkit-transform: translate3d(-50%,-50%,0);
+\ttransition: transform 0.2s, opacity 0.2s, visibility 0.2s;
+\ttransition-timing-function: cubic-bezier(0.3, -0.8, 0.7, 1.8);
+}
+
+.dialogWrapper > .dialog {
+\tposition: relative;
+\tleft: 0;
+\ttop: 0;
+\ttransform: initial;
+\t-webkit-transform: initial;
+}
+
+.dialog{
+\tfilter: var(--default-drop-shadow);
+\tpadding: 30px;
+\tbox-sizing: border-box;
+\twidth: fit-content;
+}
+.dialog.hidden, .dialogWrapper.hidden{
+\topacity: 0;
+\ttransform: translate(-50%, -50%) scale(0.95);
+\tvisibility: hidden;
+}
+.dialog.topCenter{
+\ttop: 10px;
+\ttransform: translate(-50%, 0);
+}
+
+.dialog-title-header-container {
+\tdisplay: flex;
+\tgap: 20px;
+}
+
+h2.dialogTitle{
+\tmargin: 0px 0px 20px 0px;
+\tfont-size: 42px;
+}
+
+h3.dialogTitle{
+\tmargin: 0px 0px 10px 0px;
+\tfont-size: 30px;
+}
+
+.dialogButtonsContainer {
+\tmargin-top: 10px;
+\ttext-align: center;
+\tdisplay: flex;
+\tjustify-content: center;
+}
+
+.dialogButtonsContainer.vertical {
+\tflex-direction: column;
+\tmax-width: 300px;
+\tmargin: auto;
+}
+
+.dialog-art-wrapper {
+\twidth: 100%;
+\tmargin: auto;
+}
+
+.dialog-art {
+\twidth: 0;
+\tmin-width: 100%;
+\theight: 100%;
+\tmax-height: 50vh;
+\tobject-fit: contain;
+}
+
+.dialog-art-buttons-container {
+\tdisplay: flex;
+\tflex-direction: column;
+}
+
+@media (max-height: 700px) {
+\t.dialog-art-buttons-container.contains-art {
+\t\tflex-direction: row;
+\t}
+}
+@media (max-height: 700px) {
+\t.dialog-art-buttons-container {
+\t\twidth: 600px;
+\t}
+}
+@media (max-height: 700px) and (max-width: 700px) {
+\t.dialog-art-wrapper {
+\t\tdisplay: none;
+\t}
+\t.dialog-art-buttons-container {
+\t\twidth: initial;
+\t}
+}
+
+.currency-button {
+\tpadding: 0px 30px;
+}
+
+.currency-container {
+\tdisplay: flex;
+\talign-items: center;
+\tfont-size: 18px;
+\tjustify-content: center;
+}
+
+.coin-icon {
+\twidth: 20px;
+\theight: 20px;
+\tdisplay: inline-block;
+\tbackground-image: url(static/img/coin.svg);
+\tmargin-right: 5px;
+}
+
+.coin-count-text {
+\tcolor: #fbd413;
+\tfont-weight: 900;
+\t-webkit-text-stroke: 2px #766200;
+\tfilter: drop-shadow(0px 1px #766200);
+\tposition: relative;
+\tletter-spacing: 1px;
+\tfont-size: 20pt;
+}
+
+.coin-count-text::after {
+\tcontent: attr(data-text-content);
+\t-webkit-text-stroke: 0;
+\tfilter: none;
+\tposition: absolute;
+\tleft: 0;
+\ttop: 0px;
+}
+
+.dialogTabs {
+\tposition: absolute;
+\ttop: -50px;
+\tleft: 5px;
+\tpointer-events: none;
+}
+
+.dialogTab {
+\tdisplay: inline-block;
+\tpointer-events: auto;
+\ttransition: transform 0.1s;
+\theight: 80px;
+}
+
+.dialogTabSpacer {
+\tdisplay: inline-block;
+\twidth: 20px;
+}
+
+.dialogTab.back {
+\t--wrinkled-paper-color: #d1d1d1;
+}
+
+.dialogTab.front:not(.active), .dialogTab.back.active {
+\topacity: 0;
+\tpointer-events: none;
+}
+
+.dialogTab.back:not(.active) {
+\ttransform: translateY(4px);
+\tcursor: pointer;
+}
+
+.dialogTab:not(.active):hover {
+\ttransform: translateY(2px);
+}
+
+.dialogTabIcon {
+\twidth: 60px;
+\theight: 60px;
+\tbackground-size: contain;
+\tbackground-repeat: no-repeat;
+}
+
+.skipDialogText {
+\tposition: absolute;
+\tbottom: 0;
+\tleft: 50%;
+\ttransform: translate(-50%, 25px);
+\tcolor: #dddddd;
+\ttext-shadow: 1px 1px #00000073;
+\tfont-size: 16px;
+\tcursor: pointer;
+\twhite-space: nowrap;
+}
+
+.toggle-menu-button {
+\tpadding: 10px;
+\tpadding-left: calc(env(safe-area-inset-left) + 10px);
+\tpadding-top: calc(env(safe-area-inset-top) + 30px);
+\tposition: absolute;
+\tleft: 0;
+\ttop: 0;
+\tz-index: 110;
+}
+
+.main-menu-top-left {
+\tdisplay: flex;
+\tflex-direction: column;
+\tmax-height: 100vh;
+\tpointer-events: none;
+\tpadding-top: env(safe-area-inset-top);
+\tpadding-left: env(safe-area-inset-left);
+}
+
+.menu-buttons-container {
+\tpointer-events: auto;
+}
+
+.main-menu-corner-profile {
+\twidth: fit-content;
+\tdisplay: flex;
+\tgap: 10px;
+\tmargin: 10px;
+\tpadding: 0;
+\tborder: none;
+\tbackground: transparent;
+\talign-items: center;
+\tcursor: pointer;
+\tpointer-events: auto;
+}
+.main-menu-corner-profile:hover {
+\tfilter: brightness(0.9);
+}
+.main-menu-corner-profile:active {
+\tfilter: brightness(0.85);
+}
+
+.avatar {
+\tmin-width: 40px;
+\tmin-height: 40px;
+\tbackground-size: contain;
+}
+
+.main-menu-corner-profile .avatar {
+\tfilter: var(--default-drop-shadow);
+}
+
+.main-menu-username {
+\tfont-size: 30px;
+}
+
+.main-menu-username:not(.blueNight) {
+\tfont-size: 25px;
+\tfont-weight: bold;
+}
+
+.menu-buttons-container {
+\tmax-width: fit-content;
+\toverflow-y: auto;
+\tmax-height: 100vh;
+}
+.menu-buttons-container.hidden {
+\tdisplay: none;
+}
+.menu-buttons-container::-webkit-scrollbar {
+\twidth: 0px;
+}
+
+.main-menu-button.exit-button {
+\t--wrinkled-paper-color: #6e0000;
+\t--wrinkled-paper-border-color: #3e0000;
+\t--icon-filter: invert(100%);
+}
+
+.main-menu-promo-banner-container {
+\ttop: 20px;
+\tright: 20px;
+\tposition: absolute;
+\twidth: 320px;
+\theight: 210px;
+\tfilter: var(--default-drop-shadow);
+}
+.main-menu-promo-banner-container.hidden {
+\tdisplay: none;
+}
+
+@media (max-width: 1200px), (max-height: 700px) {
+\t.main-menu-promo-banner-container {
+\t\twidth: 220px;
+\t\theight: 140px;
+\t}
+}
+
+@media (max-width: 500px), (max-height: 420px) {
+\t.main-menu-promo-banner-container {
+\t\tdisplay: none;
+\t}
+}
+
+.main-menu-promo-banner {
+\twidth: 100%;
+\theight: 100%;
+\tbackground: center / cover, var(--default-ui-bg-color);
+\t--wrinkled-paper-wrinkle-size: 8px;
+\t--wrinkled-paper-tear-count-min: 0.003;
+\t--wrinkled-paper-tear-count-max: 0.004;
+\tcursor: pointer;
+}
+.main-menu-promo-banner:hover {
+\tfilter: brightness(0.9);
+}
+.main-menu-promo-banner:active {
+\tfilter: brightness(0.85);
+}
+
+#mainMenu > .bottom-texts {
+\tposition: absolute;
+\tbottom: 0;
+\tright: 0;
+\tfont-size: 14pt;
+\tlist-style-type: none;
+\tdisplay: flex;
+\tgap: 10px;
+\tmargin: 3px;
+\tpadding: 0px;
+}
+
+.gameAd{
+\tposition: absolute;
+\tbottom: 0;
+\tmargin-bottom: 20px;
+\tleft: 50%;
+\ttransform: translate(-50%);
+\tbackground: #0000004f;
+\tz-index: 20;
+}
+.gameAd.desktop{
+\twidth: 728px;
+\theight: 90px;
+}
+.gameAd.mobile{
+\twidth: 320px;
+\theight: 50px;
+\tdisplay: none;
+}
+@media(max-width: 1220px){
+\t.gameAd.desktop{
+\t\tdisplay: none;
+\t}
+\t.gameAd.mobile{
+\t\tdisplay: inherit;
+\t}
+}
+.gameAd.hidden{
+\tdisplay: none;
+}
+
+.shake-anim {
+\tanimation: 2.5s linear infinite shake;
+}
+
+@keyframes shake {
+\t0% { transform: rotate(0deg); }
+\t4% { transform: rotate(4deg); }
+\t8% { transform: rotate(-3deg); }
+\t12% { transform: rotate(2deg); }
+\t16% { transform: rotate(1deg); }
+\t20% { transform: rotate(0deg); }
+}
+
+.crosshair-container {
+\tposition: absolute;
+\tleft: 50%;
+\ttop: 50%;
+\tz-index: 100;
+\ttransform: translate(-50%, -50%);
+\tpointer-events: none;
+\t--line-color: white;
+\t--outline-color: black;
+}
+.crosshair-line {
+\tposition: absolute;
+\twidth: 15px;
+\theight: 2px;
+\tbackground: var(--line-color);
+\tborder: 2px solid var(--outline-color);
+\tborder-radius: 10px;
+\ttransform-origin: left;
+\twill-change: transform;
+}
+
+.flagReturnProgressContainer {
+\tposition: absolute;
+\ttransform: translate(-50%, -50%);
+\ttransition: opacity 0.2s;
+}
+.flagReturnProgressContainer.hidden{
+\topacity: 0;
+}
+.flagReturnProgressPath {
+\tfill: none;
+\tstroke-width: 10px;
+\tstroke-linecap: round;
+}
+
+.mainInfoText.bottom{
+\tfont-size: 45px;
+\tleft: 0;
+\ttop: initial;
+\tbottom: 25px;
+}
+.mainInfoText.hidden{
+\tdisplay: none;
+}
+
+.notificationIconsUiContainer{
+\twidth: 200px;
+\theight: 200px;
+\tpointer-events: none;
+\tposition: absolute;
+\tz-index: 1;
+}
+
+.notificationIconsUiContainer.topleft{
+\tleft: 0;
+\ttop: 80px;
+\ttransform-origin: top left;
+}
+
+.notificationIconsUiContainer.centerbig{
+\tleft: 50%;
+\ttop: 50%;
+\twidth: 50vw;
+\theight: min(50vw, 100vh);
+\ttransform: translate(-50%, -50%);
+}
+
+.notificationIconsUiContainer.crosshair{
+\tleft: 50%;
+\ttop: 50%;
+\twidth: 200px;
+\theight: 200px;
+\ttransform: translate(-50%, -50%) translateY(-140px);
+}
+
+.notificationIcon{
+\tfilter: var(--default-drop-shadow);
+\tanimation: 1s notificationIconFade 6s both, 0.2s notificationIconPop;
+\twidth: 100%;
+\theight: 100%;
+\tbackground-position: center;
+\tbackground-repeat: no-repeat;
+}
+
+.crosshair > .notificationIcon{
+\tanimation: 1s notificationIconFade 0.5s both, 0.2s notificationIconPop;
+}
+
+@keyframes notificationIconPop{
+\t0%{
+\t\ttransform: scale(1);
+\t}
+\t50%{
+\t\ttransform: scale(1.2);
+\t}
+\t100%{
+\t\ttransform: scale(1);
+\t}
+}
+@keyframes notificationIconFade{
+\t0%{
+\t\topacity: 1;
+\t}
+
+\t100%{
+\t\topacity: 0;
+\t}
+}
+
+.score-offset-notifications-container {
+\tpointer-events: none;
+\toverflow: hidden;
+}
+
+.score-offset-notifications-list {
+\tfont-size: 30px;
+\ttext-align: center;
+\ttop: 20%;
+\tposition: absolute;
+\tz-index: 1;
+\twidth: 100%;
+}
+
+.scoreOffsetNotification {
+\tposition: absolute;
+\twidth: 100%;
+\ttransition: transform 0.5s;
+}
+
+.scoreOffsetNotificationScore {
+\tcolor: #b0e9b0;
+}
+
+.touchListener {
+\tz-index: 1;
+}
+.touchListener.focus {
+\tcursor: none;
+}
+
+.touchInputWhiteBorder{
+\tbackground: #00000047;
+\tborder-radius: 150px;
+\tbox-sizing: border-box;
+\tborder: solid white;
+\tpointer-events: none;
+}
+
+.touchInputJoyStickContainer{
+\twidth: 150px;
+\theight: 150px;
+\tposition: absolute;
+\ttransition: opacity 0.3s;
+\tz-index: 1;
+}
+
+.touchInputJoyStick{
+\twidth: 60px;
+\theight: 60px;
+\tleft: 50%;
+\ttop: 50%;
+\tbackground: white;
+\tborder-radius: 60px;
+\tposition: absolute;
+\ttransform: translate(-50%, -50%);
+}
+
+.touchInputButton{
+\tposition: absolute;
+\tz-index: 1;
+}
+.touchInputButton.hidden {
+\tdisplay: none;
+}
+
+.touchInputButton.touching{
+\tbackground: #ffffff47;
+}
+
+@media(max-width: 700px), (max-height: 450px){
+\t.toggle-menu-button {
+\t\tpadding-top: calc(env(safe-area-inset-top) + 10px);
+\t}
+
+\t.notificationIconsUiContainer{
+\t\ttransform: scale(0.5);
+\t}
+
+\t.notificationIconsUiContainer.topleft{
+\t\ttop: 40px;
+\t}
+
+\tbody {
+\t\t--game-ui-state: small;
+\t}
+}
+
+.screenFlash{
+\tpointer-events: none;
+\tbackground: red;
+\topacity: 0;
+}
+
+.playersListTeamWonTitle{
+\ttext-align: center;
+\tfont-size: 34px;
+\tmargin: 0;
+}
+
+.playersListContainer{
+\toverflow: auto;
+\tmax-height: 600px;
+\tdisplay: flex;
+\tgap: 20px;
+\talign-items: flex-start;
+}
+
+@media(max-width: 1000px){
+\t.playersListContainer{
+\t\tflex-direction: column;
+\t}
+}
+
+.playersListTeam{
+\t--wrinkled-paper-wrinkle-size: 4px;
+\twidth: 550px;
+\t--wrinkled-paper-color: var(--team-bg-color-light);
+}
+html.theme-dark .playersListTeam {
+\t--wrinkled-paper-color: var(--team-bg-color-dark);
+}
+
+.itemsTable{
+\tborder-collapse: collapse;
+}
+
+.playersListHead{
+\tcolor: white;
+}
+
+.itemsTable > tbody > tr:nth-child(even){
+\t--wrinkled-paper-wrinkle-size: 2px;
+\t--wrinkled-paper-color: var(--items-table-odd-row-color);
+}
+
+.itemsTable > tbody > tr > td:first-child{
+\tpadding-left: 10px;
+}
+.itemsTable > tbody > tr > td:last-child{
+\tpadding-right: 10px;
+}
+
+.itemsTable > tbody > tr > td, .playersListHead > th{
+\tpadding: 10px 0px;
+}
+
+.player-avatar {
+\tmin-width: 40px;
+\tmin-height: 40px;
+\twidth: 40px;
+\theight: 40px;
+\tbackground-size: contain;
+\tbackground-repeat: no-repeat;
+}
+
+.players-list-label{
+\tcolor: white;
+\tbackground: #909090;
+\tpadding: 2px 3px;
+\tfont-size: 13px;
+\tmargin-left: 7px;
+\tborder-radius: 3px;
+}
+
+.players-list-item-username {
+\tdisplay: flex;
+\tmax-width: 200px;
+\talign-items: center;
+}
+
+.player-list-username {
+\toverflow: hidden;
+\ttext-overflow: ellipsis;
+\twhite-space: nowrap;
+}
+
+.player-name-verified-icon {
+\tmargin-left: 5px;
+\twidth: 20px;
+\theight: 20px;
+\tbackground-repeat: no-repeat;
+\tbackground-image: url(static/img/menuUI/verified.svg);
+\tfilter: var(--icon-filter)
+}
+
+.playersListItem > td:first-child {
+\tpadding: 0px;
+}
+
+.playersListItemScore{
+\ttext-align: center;
+}
+
+.gameoverStatsContainer {
+\t--team-bg-color-light: var(--items-table-bg-color);
+\t--team-bg-color-dark: var(--items-table-bg-color);
+\twidth: fit-content;
+\tmargin: auto;
+\toverflow: auto;
+\t--wrinkled-paper-color: var(--team-bg-color-light);
+}
+html.theme-dark .gameoverStatsContainer {
+\t--wrinkled-paper-color: var(--team-bg-color-dark);
+}
+
+.gameOverStatsTable {
+\twidth: 240px;
+}
+
+.game-over-stats-coins-container {
+\tdisplay: flex;
+\tgap: 10px;
+\tjustify-content: center;
+\tmargin-top: 20px;
+}
+
+.totalScoreRow {
+\tfont-weight: bold;
+}
+
+.ownedCoinsContainer {
+\tposition: absolute;
+\ttop: -20px;
+\tright: -20px;
+\tpadding: 10px;
+\tfilter: var(--default-drop-shadow);
+}
+
+.weaponSelectionDialog{
+\tbottom: 130px;
+\ttop: initial;
+\theight: fit-content;
+\ttransform: translate(-50%, 0px);
+\ttransform-origin: bottom;
+}
+.weaponSelectionDialog.hidden{
+\ttransform: translate(-50%, 0px) scale(0.95);
+}
+
+@media(max-width: 1220px){
+\t.weaponSelectionDialog{
+\t\tbottom: 90px;
+\t\ttransform: translate(-50%, 0px) scale(0.5);
+\t}
+\t.weaponSelectionDialog.hidden{
+\t\ttransform: translate(-50%, 0px) scale(0.45);
+\t}
+}
+.weaponSelectionContainer{
+\tdisplay: flex;
+\tgap: 10px;
+}
+
+.weaponSelectionItem{
+\ttransition: transform 0.2s;
+\ttransition-timing-function: cubic-bezier(0.0, 0.0, 0.0, 1.8);
+\t--wrinkled-paper-color: #d8d8d8;
+\t--wrinkled-paper-border-segments: 0.02;
+\t--wrinkled-paper-banner-color: #0000001c;
+\t--wrinkled-paper-banner-size: 17px;
+\t--wrinkled-paper-border-size: 8px;
+\t--wrinkled-paper-border-color: #0000002b;
+\tposition: relative;
+\tfilter: var(--default-drop-shadow);
+}
+
+.weaponSelectionItem.selected{
+\ttransform: scale(1.1);
+\t--wrinkled-paper-color: #bfbfbf;
+}
+.weaponSelectionItem:not(.selected){
+\tfilter: brightness(0.8);
+}
+.weaponSelectionItem:not(.selected):hover{
+\tfilter: brightness(0.9);
+}
+
+.weaponSelectionItemKeyNumber{
+\tposition: absolute;
+\tmargin: 9px;
+\tcolor: white;
+\ttop: 0;
+\tright: 0;
+}
+
+.weaponSelectionItemIcon{
+\twidth: 80px;
+\theight: 80px;
+\tmargin: 5px;
+}
+
+.text-with-submit-form {
+\tdisplay: flex;
+\tgap: 5px;
+\twidth: 100%;
+\tpadding: 4px 10px;
+\tbox-sizing: border-box;
+}
+
+.text-with-submit-form > * {
+\tmargin-left: 0;
+\tmargin-right: 0;
+}
+
+.text-with-submit-form > button {
+\tpadding-left: 10px;
+\tpadding-right: 10px;
+}
+
+.skin-downloader-dialog-content {
+\tmax-width: 600px;
+\tdisplay: flex;
+\tflex-wrap: wrap;
+\talign-items: center;
+}
+
+.skin-downloader-dialog-controls {
+\tdisplay: flex;
+\tflex-direction: column;
+}
+
+.skin-downloader-dialog-controls > * {
+\theight: 30px;
+}
+
+.skin-downloader-size-input {
+\twidth: 50px;
+}
+
+.skin-downloader-download-container {
+\tpadding: 10px;
+\talign-self: center;
+}
+
+.downloadable-skin-preview {
+\twidth: 250px;
+\theight: 250px;
+\tbackground-size: contain;
+\tbackground-repeat: no-repeat;
+\tflex-shrink: 0;
+}
+
+.shop-paged-view-container {
+\twidth: 340px;
+\theight: 300px;
+\tposition: relative;
+\toverflow: hidden;
+}
+`
 );
 const sheet$d = new CSSStyleSheet;
 sheet$d.replaceSync(
-    'html {\n\t--not-black: #090909;\n\t--default-text-color: black;\n\t--disabled-text-color: #5f5f5f;\n\t--default-ui-bg-color: white;\n\t--container-ui-bg-color: #f1f1f1;\n\t--icon-filter: none;\n\t--default-drop-shadow: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));\n\t--default-wrinkled-paper-border-color: #353535;\n\t/** Used for buttons that appear directly on top of the game rather\n\tthan in a dialog. */\n\t--button-on-clear-bg-wrinkled-paper-border-color: var(--default-wrinkled-paper-border-color);\n\t--disabled-wrinkled-paper-border-color: #919191;\n\t--default-wrinkled-paper-top-color-extra: #e2e2e2;\n\t--shop-item-background-color: #f1f1f1;\n\t--shop-item-background-color-hover: #d8d8d8;\n\t--shop-item-background-color-active: #e5e5e5;\n\t--shop-item-highlight-color: #fdc570;\n\t--blue-highlight-color: #0c5fcc;\n\t--items-table-bg-color: #cdcdcd;\n\t--items-table-odd-row-color: #ffffff6b;\n\n\t--safe-area-inset-top: env(safe-area-inset-top, 0);\n    --safe-area-inset-right: env(safe-area-inset-right, 0);\n    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0);\n    --safe-area-inset-left: env(safe-area-inset-left, 0);\n}\n\nhtml.theme-dark {\n\t--default-text-color: white;\n\t--disabled-text-color: #b6b6b6;\n\t--default-ui-bg-color: #454545;\n\t--container-ui-bg-color: #646464;\n\t--icon-filter: invert(100%);\n\t--default-wrinkled-paper-border-color: #a5a5a5;\n\t--button-on-clear-bg-wrinkled-paper-border-color: #242424;\n\t--disabled-wrinkled-paper-border-color: #646464;\n\t--default-wrinkled-paper-top-color-extra: #606060;\n\t--shop-item-background-color: #646464;\n\t--shop-item-background-color-hover: #585858;\n\t--shop-item-background-color-active: #505050;\n\t--shop-item-highlight-color: #9c6f2d;\n\t--blue-highlight-color: #3f92ff;\n\t--items-table-bg-color: #6d6d6d;\n\t--items-table-odd-row-color: #0000002b;\n}\n'
+    `html {
+\t--not-black: #090909;
+\t--default-text-color: black;
+\t--disabled-text-color: #5f5f5f;
+\t--default-ui-bg-color: white;
+\t--container-ui-bg-color: #f1f1f1;
+\t--icon-filter: none;
+\t--default-drop-shadow: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+\t--default-wrinkled-paper-border-color: #353535;
+\t/** Used for buttons that appear directly on top of the game rather
+\tthan in a dialog. */
+\t--button-on-clear-bg-wrinkled-paper-border-color: var(--default-wrinkled-paper-border-color);
+\t--disabled-wrinkled-paper-border-color: #919191;
+\t--default-wrinkled-paper-top-color-extra: #e2e2e2;
+\t--shop-item-background-color: #f1f1f1;
+\t--shop-item-background-color-hover: #d8d8d8;
+\t--shop-item-background-color-active: #e5e5e5;
+\t--shop-item-highlight-color: #fdc570;
+\t--blue-highlight-color: #0c5fcc;
+\t--items-table-bg-color: #cdcdcd;
+\t--items-table-odd-row-color: #ffffff6b;
+
+\t--safe-area-inset-top: env(safe-area-inset-top, 0);
+    --safe-area-inset-right: env(safe-area-inset-right, 0);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0);
+    --safe-area-inset-left: env(safe-area-inset-left, 0);
+}
+
+html.theme-dark {
+\t--default-text-color: white;
+\t--disabled-text-color: #b6b6b6;
+\t--default-ui-bg-color: #454545;
+\t--container-ui-bg-color: #646464;
+\t--icon-filter: invert(100%);
+\t--default-wrinkled-paper-border-color: #a5a5a5;
+\t--button-on-clear-bg-wrinkled-paper-border-color: #242424;
+\t--disabled-wrinkled-paper-border-color: #646464;
+\t--default-wrinkled-paper-top-color-extra: #606060;
+\t--shop-item-background-color: #646464;
+\t--shop-item-background-color-hover: #585858;
+\t--shop-item-background-color-active: #505050;
+\t--shop-item-highlight-color: #9c6f2d;
+\t--blue-highlight-color: #3f92ff;
+\t--items-table-bg-color: #6d6d6d;
+\t--items-table-odd-row-color: #0000002b;
+}
+`
 );
 const sheet$c = new CSSStyleSheet;
 sheet$c.replaceSync(
-    '.dialog-button,\n.icon-button,\n.dialog-color-input {\n\tborder: none;\n\tappearance: none;\n}\n\n.dialog-button,\n.main-menu-button {\n\t-webkit-tap-highlight-color: transparent;\n}\n\n.dialog-button{\n\tpadding: 7px 30px;\n\tmargin: 4px 10px;\n\tfont-size: 24px;\n\theight: 38px;\n\tcolor: var(--default-text-color);\n\tvertical-align: middle;\n\twhite-space: nowrap;\n\t--wrinkled-paper-border-size: 3;\n\t--wrinkled-paper-border-size-bottom: 6;\n\t--wrinkled-paper-border-color: var(--default-wrinkled-paper-border-color);\n\t--wrinkled-paper-seed: 70;\n\t--wrinkled-paper-wrinkle-size: 2px;\n\t--wrinkled-paper-border-segments: 0.02;\n\t--wrinkled-paper-tear-count-min: 0;\n\t--wrinkled-paper-tear-count-max: 0;\n}\n.dialog-button:hover:not(:disabled){\n\tfilter: brightness(0.9);\n}\n.dialog-button:active:not(:disabled),\n.dialog-checkbox-input:active:not(:disabled),\n.dialog-toggle-input:active:not(:disabled),\n.dialog-color-input:active {\n\tfilter: brightness(0.8);\n}\n\n.dialog-button:not(:disabled){\n\tcursor: pointer;\n}\n\n.dialog-button:disabled {\n\tcolor: #959595;\n}\n\n.dialog-button:disabled > .currency-container, .dialog-button:disabled > .dialog-button-icon {\n\topacity: 0.5;\n}\n\n.dialog-button-icon {\n\twidth: 20px;\n\theight: 20px;\n\tdisplay: inline-block;\n\tbackground-size: contain;\n\tbackground-position: center;\n\tbackground-repeat: no-repeat;\n\tmargin-right: 10px;\n\tvertical-align: middle;\n}\n.dialog-button-icon:not(.no-dark-mode-invert) {\n\tfilter: var(--icon-filter);\n}\n\n.icon-button {\n\tcursor: pointer;\n\tbackground: transparent;\n\tbackground-repeat: no-repeat;\n\tbackground-position: center;\n}\n\n.icon-button:hover {\n\topacity: 0.7;\n}\n.icon-button:active {\n\topacity: 0.6;\n}\n\n.header-button {\n\tpadding: 0;\n}\n\n.icon-button > .dialog-button-icon,\n.header-button > .dialog-button-icon {\n\twidth: 20px;\n\theight: 20px;\n\tmargin: 3px;\n}\n\n.header-back-button > .dialog-button-icon {\n\twidth: 30px;\n}\n\n\n.main-menu-button-container {\n\tdisplay: flex;\n\talign-items: center;\n}\n\n.main-menu-button{\n\tborder: none;\n\twidth: 70px;\n\theight: 70px;\n\tcursor: pointer;\n\tmargin: 5px;\n\tpadding: 0;\n\t--wrinkled-paper-border-segments: 0.04;\n\t--wrinkled-paper-wrinkle-size: 5px;\n\t--wrinkled-paper-tear-count-min: 0.003;\n\t--wrinkled-paper-tear-count-max: 0.004;\n\t--wrinkled-paper-border-size: 3;\n\t--wrinkled-paper-border-size-bottom: 6;\n\t--wrinkled-paper-border-color: var(--button-on-clear-bg-wrinkled-paper-border-color);\n\t--wrinkled-paper-tear-count-min: 0;\n\t--wrinkled-paper-tear-count-max: 0;\n\tfilter: var(--default-drop-shadow);\n}\n.main-menu-button:hover{\n\tfilter: var(--default-drop-shadow) brightness(0.9);\n}\n.main-menu-button:active{\n\tfilter: var(--default-drop-shadow) brightness(0.8);\n}\n\n.main-menu-button-text {\n\tcolor: white;\n\tfont-size: 30px;\n}\n\n.main-menu-promo-button {\n\tposition: absolute;\n\tbottom: 0;\n\tleft: 50%;\n\ttransform: translate(-50%, 50%);\n\tmargin: 0;\n\t--wrinkled-paper-border-color: var(--button-on-clear-bg-wrinkled-paper-border-color);\n}\n\n.buttonImage{\n\twidth: 100%;\n\theight: 100%;\n\tbackground-size: contain;\n\tbackground-repeat: no-repeat;\n\tbackground-position: center;\n}\n.buttonImage:not(.update-icon) {\n\tfilter: var(--icon-filter);\n}\n.update-icon {\n\tfilter: invert(38%) sepia(99%) saturate(839%) hue-rotate(86deg) brightness(100%) contrast(94%);\n}\n\n.dialog-text-input,\n.dialog-select-wrapper,\n.dialog-checkbox-input,\n.dialog-toggle-input,\ninput.dialog-range-input[type=range],\n.dialog-color-input {\n\t--wrinkled-paper-border-size: 3;\n\t--wrinkled-paper-border-size-bottom: 4;\n\t--wrinkled-paper-border-color: var(--default-wrinkled-paper-border-color);\n\t--wrinkled-paper-seed: 70;\n\t--wrinkled-paper-wrinkle-size: 2px;\n\t--wrinkled-paper-border-segments: 0.02;\n\t--wrinkled-paper-border-color-top-extra: var(--default-wrinkled-paper-top-color-extra);\n\t--wrinkled-paper-border-size-top-extra: 10;\n\t--wrinkled-paper-tear-count-min: 0;\n\t--wrinkled-paper-tear-count-max: 0;\n}\n.dialog-checkbox-input:focus-visible,\n.dialog-toggle-input:focus-visible,\n.dialog-text-input:focus-visible,\n.dialog-button:focus-visible,\n.main-menu-button:focus-visible,\n.dialog-select-wrapper:has(> select:focus-visible),\n.dialog-color-input:focus-visible,\ninput.dialog-range-input[type=range]:focus-visible::-webkit-slider-thumb {\n\toutline: none;\n\t--wrinkled-paper-border-color: var(--blue-highlight-color);\n\t--wrinkled-paper-border-size: 5;\n\t--wrinkled-paper-border-size-bottom: 7;\n}\n.icon-button:focus-visible {\n\toutline: var(--blue-highlight-color) auto 1px;\n}\n\ninput.dialog-range-input[type=range]:focus-visible {\n\toutline: none;\n}\n\n.dialog-button:disabled,\n.dialog-text-input:disabled,\n.dialog-checkbox-input:disabled,\n.dialog-toggle-input:disabled {\n\t--wrinkled-paper-border-color: var(--disabled-wrinkled-paper-border-color);\n\tcolor: var(--disabled-text-color);\n}\n\n.dialog-text-input {\n\tpadding: 7px;\n\tmargin: 4px 10px;\n\tfont-size: 24px;\n\theight: 38px;\n\tborder: none;\n\tbox-sizing: border-box;\n\tcolor: var(--default-text-color);\n}\n\n.dialog-checkbox-input,\n.dialog-toggle-input,\n.dialog-range-input {\n\tappearance: none;\n\twidth: 30px;\n\theight: 30px;\n\tplace-content: center;\n}\n.dialog-checkbox-input,\n.dialog-toggle-input {\n\tdisplay: grid;\n}\n.dialog-toggle-input {\n\twidth: 45px;\n}\n.dialog-checkbox-input:checked::before {\n\tcontent: "";\n\twidth: 20px;\n\theight: 20px;\n\tbackground-image: url(static/img/menuUI/check.svg);\n\tbackground-size: contain;\n\tfilter: var(--icon-filter);\n}\n.dialog-checkbox-input:checked:disabled::before,\n.dialog-toggle-input:checked:disabled::before {\n\topacity: 0.5;\n}\n.dialog-toggle-input {\n\t--wrinkled-paper-extra-box-color: white;\n\t--wrinkled-paper-extra-box-size: 10px;\n\t--wrinkled-paper-extra-box-border-color: var(--default-wrinkled-paper-border-color);\n\t--wrinkled-paper-extra-box-border-size: 2;\n\t--wrinkled-paper-extra-box-side: left;\n}\n.dialog-toggle-input:checked {\n\t--wrinkled-paper-extra-box-side: right;\n}\n\ninput.dialog-range-input[type=range]::-webkit-slider-thumb {\n\tappearance: none;\n\twidth: 10px;\n\theight: 30px;\n\t--wrinkled-paper-color: white;\n\t--wrinkled-paper-wrinkle-size: 2px;\n\t--wrinkled-paper-border-size-top-extra: 0;\n}\n\n.dialog-select-wrapper {\n\tposition: relative;\n}\n.dialog-select-wrapper::after {\n\tcontent: "";\n\tposition: absolute;\n\twidth: 20px;\n\theight: 20px;\n\ttop: 50%;\n\ttransform: translateY(-50%);\n\tright: 3px;\tbackground: url(static/img/downArrowSmall.svg) no-repeat right center;\n\tfilter: var(--icon-filter);\n}\n\n.dialog-select-input {\n\tcolor: var(--default-text-color);\n\tappearance: none;\n\toutline: none;\n\tborder: none;\n\tpadding: 8px 25px 8px 8px;\n\tfont-size: 14pt;\n\tbackground-color: transparent;\n}\n.dialog-select-input > option {\n\tbackground-color: var(--default-ui-bg-color);\n}\n\n.dialog-color-input::-webkit-color-swatch {\n\tborder: none;\n}\n'
+    `.dialog-button,
+.icon-button,
+.dialog-color-input {
+\tborder: none;
+\tappearance: none;
+}
+
+.dialog-button,
+.main-menu-button {
+\t-webkit-tap-highlight-color: transparent;
+}
+
+.dialog-button{
+\tpadding: 7px 30px;
+\tmargin: 4px 10px;
+\tfont-size: 24px;
+\theight: 38px;
+\tcolor: var(--default-text-color);
+\tvertical-align: middle;
+\twhite-space: nowrap;
+\t--wrinkled-paper-border-size: 3;
+\t--wrinkled-paper-border-size-bottom: 6;
+\t--wrinkled-paper-border-color: var(--default-wrinkled-paper-border-color);
+\t--wrinkled-paper-seed: 70;
+\t--wrinkled-paper-wrinkle-size: 2px;
+\t--wrinkled-paper-border-segments: 0.02;
+\t--wrinkled-paper-tear-count-min: 0;
+\t--wrinkled-paper-tear-count-max: 0;
+}
+.dialog-button:hover:not(:disabled){
+\tfilter: brightness(0.9);
+}
+.dialog-button:active:not(:disabled),
+.dialog-checkbox-input:active:not(:disabled),
+.dialog-toggle-input:active:not(:disabled),
+.dialog-color-input:active {
+\tfilter: brightness(0.8);
+}
+
+.dialog-button:not(:disabled){
+\tcursor: pointer;
+}
+
+.dialog-button:disabled {
+\tcolor: #959595;
+}
+
+.dialog-button:disabled > .currency-container, .dialog-button:disabled > .dialog-button-icon {
+\topacity: 0.5;
+}
+
+.dialog-button-icon {
+\twidth: 20px;
+\theight: 20px;
+\tdisplay: inline-block;
+\tbackground-size: contain;
+\tbackground-position: center;
+\tbackground-repeat: no-repeat;
+\tmargin-right: 10px;
+\tvertical-align: middle;
+}
+.dialog-button-icon:not(.no-dark-mode-invert) {
+\tfilter: var(--icon-filter);
+}
+
+.icon-button {
+\tcursor: pointer;
+\tbackground: transparent;
+\tbackground-repeat: no-repeat;
+\tbackground-position: center;
+}
+
+.icon-button:hover {
+\topacity: 0.7;
+}
+.icon-button:active {
+\topacity: 0.6;
+}
+
+.header-button {
+\tpadding: 0;
+}
+
+.icon-button > .dialog-button-icon,
+.header-button > .dialog-button-icon {
+\twidth: 20px;
+\theight: 20px;
+\tmargin: 3px;
+}
+
+.header-back-button > .dialog-button-icon {
+\twidth: 30px;
+}
+
+
+.main-menu-button-container {
+\tdisplay: flex;
+\talign-items: center;
+}
+
+.main-menu-button{
+\tborder: none;
+\twidth: 70px;
+\theight: 70px;
+\tcursor: pointer;
+\tmargin: 5px;
+\tpadding: 0;
+\t--wrinkled-paper-border-segments: 0.04;
+\t--wrinkled-paper-wrinkle-size: 5px;
+\t--wrinkled-paper-tear-count-min: 0.003;
+\t--wrinkled-paper-tear-count-max: 0.004;
+\t--wrinkled-paper-border-size: 3;
+\t--wrinkled-paper-border-size-bottom: 6;
+\t--wrinkled-paper-border-color: var(--button-on-clear-bg-wrinkled-paper-border-color);
+\t--wrinkled-paper-tear-count-min: 0;
+\t--wrinkled-paper-tear-count-max: 0;
+\tfilter: var(--default-drop-shadow);
+}
+.main-menu-button:hover{
+\tfilter: var(--default-drop-shadow) brightness(0.9);
+}
+.main-menu-button:active{
+\tfilter: var(--default-drop-shadow) brightness(0.8);
+}
+
+.main-menu-button-text {
+\tcolor: white;
+\tfont-size: 30px;
+}
+
+.main-menu-promo-button {
+\tposition: absolute;
+\tbottom: 0;
+\tleft: 50%;
+\ttransform: translate(-50%, 50%);
+\tmargin: 0;
+\t--wrinkled-paper-border-color: var(--button-on-clear-bg-wrinkled-paper-border-color);
+}
+
+.buttonImage{
+\twidth: 100%;
+\theight: 100%;
+\tbackground-size: contain;
+\tbackground-repeat: no-repeat;
+\tbackground-position: center;
+}
+.buttonImage:not(.update-icon) {
+\tfilter: var(--icon-filter);
+}
+.update-icon {
+\tfilter: invert(38%) sepia(99%) saturate(839%) hue-rotate(86deg) brightness(100%) contrast(94%);
+}
+
+.dialog-text-input,
+.dialog-select-wrapper,
+.dialog-checkbox-input,
+.dialog-toggle-input,
+input.dialog-range-input[type=range],
+.dialog-color-input {
+\t--wrinkled-paper-border-size: 3;
+\t--wrinkled-paper-border-size-bottom: 4;
+\t--wrinkled-paper-border-color: var(--default-wrinkled-paper-border-color);
+\t--wrinkled-paper-seed: 70;
+\t--wrinkled-paper-wrinkle-size: 2px;
+\t--wrinkled-paper-border-segments: 0.02;
+\t--wrinkled-paper-border-color-top-extra: var(--default-wrinkled-paper-top-color-extra);
+\t--wrinkled-paper-border-size-top-extra: 10;
+\t--wrinkled-paper-tear-count-min: 0;
+\t--wrinkled-paper-tear-count-max: 0;
+}
+.dialog-checkbox-input:focus-visible,
+.dialog-toggle-input:focus-visible,
+.dialog-text-input:focus-visible,
+.dialog-button:focus-visible,
+.main-menu-button:focus-visible,
+.dialog-select-wrapper:has(> select:focus-visible),
+.dialog-color-input:focus-visible,
+input.dialog-range-input[type=range]:focus-visible::-webkit-slider-thumb {
+\toutline: none;
+\t--wrinkled-paper-border-color: var(--blue-highlight-color);
+\t--wrinkled-paper-border-size: 5;
+\t--wrinkled-paper-border-size-bottom: 7;
+}
+.icon-button:focus-visible {
+\toutline: var(--blue-highlight-color) auto 1px;
+}
+
+input.dialog-range-input[type=range]:focus-visible {
+\toutline: none;
+}
+
+.dialog-button:disabled,
+.dialog-text-input:disabled,
+.dialog-checkbox-input:disabled,
+.dialog-toggle-input:disabled {
+\t--wrinkled-paper-border-color: var(--disabled-wrinkled-paper-border-color);
+\tcolor: var(--disabled-text-color);
+}
+
+.dialog-text-input {
+\tpadding: 7px;
+\tmargin: 4px 10px;
+\tfont-size: 24px;
+\theight: 38px;
+\tborder: none;
+\tbox-sizing: border-box;
+\tcolor: var(--default-text-color);
+}
+
+.dialog-checkbox-input,
+.dialog-toggle-input,
+.dialog-range-input {
+\tappearance: none;
+\twidth: 30px;
+\theight: 30px;
+\tplace-content: center;
+}
+.dialog-checkbox-input,
+.dialog-toggle-input {
+\tdisplay: grid;
+}
+.dialog-toggle-input {
+\twidth: 45px;
+}
+.dialog-checkbox-input:checked::before {
+\tcontent: "";
+\twidth: 20px;
+\theight: 20px;
+\tbackground-image: url(static/img/menuUI/check.svg);
+\tbackground-size: contain;
+\tfilter: var(--icon-filter);
+}
+.dialog-checkbox-input:checked:disabled::before,
+.dialog-toggle-input:checked:disabled::before {
+\topacity: 0.5;
+}
+.dialog-toggle-input {
+\t--wrinkled-paper-extra-box-color: white;
+\t--wrinkled-paper-extra-box-size: 10px;
+\t--wrinkled-paper-extra-box-border-color: var(--default-wrinkled-paper-border-color);
+\t--wrinkled-paper-extra-box-border-size: 2;
+\t--wrinkled-paper-extra-box-side: left;
+}
+.dialog-toggle-input:checked {
+\t--wrinkled-paper-extra-box-side: right;
+}
+
+input.dialog-range-input[type=range]::-webkit-slider-thumb {
+\tappearance: none;
+\twidth: 10px;
+\theight: 30px;
+\t--wrinkled-paper-color: white;
+\t--wrinkled-paper-wrinkle-size: 2px;
+\t--wrinkled-paper-border-size-top-extra: 0;
+}
+
+.dialog-select-wrapper {
+\tposition: relative;
+}
+.dialog-select-wrapper::after {
+\tcontent: "";
+\tposition: absolute;
+\twidth: 20px;
+\theight: 20px;
+\ttop: 50%;
+\ttransform: translateY(-50%);
+\tright: 3px;\tbackground: url(static/img/downArrowSmall.svg) no-repeat right center;
+\tfilter: var(--icon-filter);
+}
+
+.dialog-select-input {
+\tcolor: var(--default-text-color);
+\tappearance: none;
+\toutline: none;
+\tborder: none;
+\tpadding: 8px 25px 8px 8px;
+\tfont-size: 14pt;
+\tbackground-color: transparent;
+}
+.dialog-select-input > option {
+\tbackground-color: var(--default-ui-bg-color);
+}
+
+.dialog-color-input::-webkit-color-swatch {
+\tborder: none;
+}
+`
 );
 const sheet$b = new CSSStyleSheet;
 sheet$b.replaceSync(
-    '.paged-view-page {\n\tposition: absolute;\n\ttop: 0;\n\tleft: 0;\n\twidth: 100%;\n\theight: 100%;\n\ttransition: opacity 0.3s, transform 0.3s;\n\tdisplay: flex;\n\tflex-direction: column;\n\talign-items: center;\n}\n\n.paged-view-page.hidden {\n\topacity: 0;\n\tpointer-events: none;\n}\n.paged-view-page.hiddenleft {\n\ttransform: translateX(-20%);\n}\n\n.paged-view-page.hiddenright {\n\ttransform: translateX(20%);\n}\n\n.paged-view-page-header {\n\tdisplay: grid;\n\twidth: 100%;\n\tgrid-template-columns: 40px 1fr auto;\n\tgrid-template-areas: "back-button header-title header-corner";\n}\n.paged-view-page-header > * {\n\talign-self: center;\n\tjustify-self: center;\n}\n\n.paged-view-page-back-button {\n\twidth: 30px;\n\theight: 30px;\n\tbackground-image: url(static/img/arrow.svg);\n}\n\n.paged-view-page-header-title {\n\tgrid-area: header-title;\n\tfont-size: 24pt;\n\tmargin: 15px;\n}\n\n.paged-view-page-header-corner {\n\tgrid-area: header-corner;\n}\n\n.paged-view-page-header-line {\n\theight: 20px;\n\twidth: 100%;\n}\n\n.paged-view-page-items-list {\n\tdisplay: flex;\n\tflex-direction: column;\n\twidth: 100%;\n\tbox-sizing: border-box;\n\tmax-width: 300px;\n}\n\n.paged-view-page-custom-subpage,\n.paged-view-page-items-list {\n\twidth: 100%;\n\theight: 100%;\n\toverflow-y: scroll;\n\toverflow-x: hidden;\n}\n'
+    `.paged-view-page {
+\tposition: absolute;
+\ttop: 0;
+\tleft: 0;
+\twidth: 100%;
+\theight: 100%;
+\ttransition: opacity 0.3s, transform 0.3s;
+\tdisplay: flex;
+\tflex-direction: column;
+\talign-items: center;
+}
+
+.paged-view-page.hidden {
+\topacity: 0;
+\tpointer-events: none;
+}
+.paged-view-page.hiddenleft {
+\ttransform: translateX(-20%);
+}
+
+.paged-view-page.hiddenright {
+\ttransform: translateX(20%);
+}
+
+.paged-view-page-header {
+\tdisplay: grid;
+\twidth: 100%;
+\tgrid-template-columns: 40px 1fr auto;
+\tgrid-template-areas: "back-button header-title header-corner";
+}
+.paged-view-page-header > * {
+\talign-self: center;
+\tjustify-self: center;
+}
+
+.paged-view-page-back-button {
+\twidth: 30px;
+\theight: 30px;
+\tbackground-image: url(static/img/arrow.svg);
+}
+
+.paged-view-page-header-title {
+\tgrid-area: header-title;
+\tfont-size: 24pt;
+\tmargin: 15px;
+}
+
+.paged-view-page-header-corner {
+\tgrid-area: header-corner;
+}
+
+.paged-view-page-header-line {
+\theight: 20px;
+\twidth: 100%;
+}
+
+.paged-view-page-items-list {
+\tdisplay: flex;
+\tflex-direction: column;
+\twidth: 100%;
+\tbox-sizing: border-box;
+\tmax-width: 300px;
+}
+
+.paged-view-page-custom-subpage,
+.paged-view-page-items-list {
+\twidth: 100%;
+\theight: 100%;
+\toverflow-y: scroll;
+\toverflow-x: hidden;
+}
+`
 );
 const sheet$a = new CSSStyleSheet;
 sheet$a.replaceSync(
-    '.maps-container {\n\tdisplay: grid;\n\tgrid-template-columns: 320px 320px;\n\trow-gap: 40px;\n\tcolumn-gap: 20px;\n\toverflow-x: hidden;\n\toverflow-y: scroll;\n\tmax-height: 80vh;\n}\n\n@media (max-width: 800px) {\n\t.maps-container {\n\t\tgrid-template-columns: 320px;\n\t}\n}\n\n.map-item {\n\tposition: relative;\n}\n\n.map-item-title {\n\tfont-size: 30pt;\n\tmargin: 0;\n\tmargin-bottom: 5px;\n\twhite-space: nowrap;\n\toverflow: hidden;\n\ttext-overflow: ellipsis;\n}\n\n.map-item-thumb {\n\twidth: 320px;\n\theight: 160px;\n\t--wrinkled-paper-wrinkle-size: 8px;\n\t--wrinkled-paper-tear-count-min: 0.003;\n\t--wrinkled-paper-tear-count-max: 0.004;\n\tfilter: var(--default-drop-shadow);\n}\n\n.map-item-thumb-layer {\n\twidth: 520px;\n\theight: 360px;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\tbackground: center / cover;\n\tposition: absolute;\n\tpointer-events: none;\n}\n\n@supports (animation-timeline: view()) {\n\t.map-item-thumb-layer {\n\t\tanimation: linear thumb-parallax;\n\t\tanimation-timeline: view();\n\t\tanimation-fill-mode: both;\n\t}\n}\n\n.map-item-thumb-layer.legacy {\n\twidth: 320px;\n\theight: 160px;\n}\n\n@keyframes thumb-parallax {\n\t0%  {\n\t\ttransform: translate(-50%, -50%) translateY(calc(0px - var(--layer-offset)));\n\t}\n\t100% {\n\t\ttransform: translate(-50%, -50%) translateY(var(--layer-offset));\n\t}\n}\n\n.map-item-join-button {\n\tposition: absolute;\n\tleft: 50%;\n\tbottom: 0;\n\ttransform: translate(-50%, 50%);\n\tmargin: 0;\n}\n'
+    `.maps-container {
+\tdisplay: grid;
+\tgrid-template-columns: 320px 320px;
+\trow-gap: 40px;
+\tcolumn-gap: 20px;
+\toverflow-x: hidden;
+\toverflow-y: scroll;
+\tmax-height: 80vh;
+}
+
+@media (max-width: 800px) {
+\t.maps-container {
+\t\tgrid-template-columns: 320px;
+\t}
+}
+
+.map-item {
+\tposition: relative;
+}
+
+.map-item-title {
+\tfont-size: 30pt;
+\tmargin: 0;
+\tmargin-bottom: 5px;
+\twhite-space: nowrap;
+\toverflow: hidden;
+\ttext-overflow: ellipsis;
+}
+
+.map-item-thumb {
+\twidth: 320px;
+\theight: 160px;
+\t--wrinkled-paper-wrinkle-size: 8px;
+\t--wrinkled-paper-tear-count-min: 0.003;
+\t--wrinkled-paper-tear-count-max: 0.004;
+\tfilter: var(--default-drop-shadow);
+}
+
+.map-item-thumb-layer {
+\twidth: 520px;
+\theight: 360px;
+\tleft: 50%;
+\ttop: 50%;
+\ttransform: translate(-50%, -50%);
+\tbackground: center / cover;
+\tposition: absolute;
+\tpointer-events: none;
+}
+
+@supports (animation-timeline: view()) {
+\t.map-item-thumb-layer {
+\t\tanimation: linear thumb-parallax;
+\t\tanimation-timeline: view();
+\t\tanimation-fill-mode: both;
+\t}
+}
+
+.map-item-thumb-layer.legacy {
+\twidth: 320px;
+\theight: 160px;
+}
+
+@keyframes thumb-parallax {
+\t0%  {
+\t\ttransform: translate(-50%, -50%) translateY(calc(0px - var(--layer-offset)));
+\t}
+\t100% {
+\t\ttransform: translate(-50%, -50%) translateY(var(--layer-offset));
+\t}
+}
+
+.map-item-join-button {
+\tposition: absolute;
+\tleft: 50%;
+\tbottom: 0;
+\ttransform: translate(-50%, 50%);
+\tmargin: 0;
+}
+`
 );
 const sheet$9 = new CSSStyleSheet;
 sheet$9.replaceSync(
-    '.settings-list {\n\toverflow: auto;\n\tmax-height: min(250px, 40vh);\n}\n\n.settings-group-header {\n\tposition: sticky;\n\ttop: -5px;\n\tmargin: 0;\n\tbackground: var(--default-ui-bg-color);\n\tpadding-top: 5px;\n\tpadding-bottom: 10px;\n}\n\n.settings-item {\n\tdisplay: flex;\n\tmargin-bottom: 6px;\n\tflex-wrap: wrap;\n\talign-items: center;\n\tjustify-content: left;\n}\n.settings-item-text {\n\tdisplay: inline;\n\tflex-shrink: 0;\n\twidth: 200px;\n}\n.settings-item-slider {\n\tdisplay: inline-flex;\n\twidth: 220px;\n\tflex-shrink: 0;\n\talign-items: center;\n}\n.settings-item-slider > input {\n\twidth: 170px;\n}\n.settings-item-slider-value {\n\tdisplay: inline-block;\n\twidth: 40px;\n\ttext-align: right;\n}\n'
+    `.settings-list {
+\toverflow: auto;
+\tmax-height: min(250px, 40vh);
+}
+
+.settings-group-header {
+\tposition: sticky;
+\ttop: -5px;
+\tmargin: 0;
+\tbackground: var(--default-ui-bg-color);
+\tpadding-top: 5px;
+\tpadding-bottom: 10px;
+}
+
+.settings-item {
+\tdisplay: flex;
+\tmargin-bottom: 6px;
+\tflex-wrap: wrap;
+\talign-items: center;
+\tjustify-content: left;
+}
+.settings-item-text {
+\tdisplay: inline;
+\tflex-shrink: 0;
+\twidth: 200px;
+}
+.settings-item-slider {
+\tdisplay: inline-flex;
+\twidth: 220px;
+\tflex-shrink: 0;
+\talign-items: center;
+}
+.settings-item-slider > input {
+\twidth: 170px;
+}
+.settings-item-slider-value {
+\tdisplay: inline-block;
+\twidth: 40px;
+\ttext-align: right;
+}
+`
 );
 const sheet$8 = new CSSStyleSheet;
 sheet$8.replaceSync(
-    '.profile-container {\n\tdisplay: flex;\n\tmargin-bottom: 10px;\n}\n\n.profile-container form {\n\tdisplay: flex;\n}\n\n.profile-container input {\n\tmargin: 0;\n\tline-height: 1;\n\theight: 40px;\n}\n\n.profile-container input:disabled {\n\tcolor: var(--default-text-color);\n\tpointer-events: none;\n}\n\n.player-name {\n\tfont-size: 24px;\n\tpadding: 7px;\n\tline-height: 1;\n}\n\n.dummy-text {\n\tposition: absolute;\n\tfont-size: 24px;\n\tpointer-events: none;\n\tpadding: 7px;\n\tvisibility: hidden;\n}\n\n.profile-container .edit-button {\n\twidth: 40px;\n\theight: 40px;\n\tborder: none;\n\tappearance: none;\n\tbackground: transparent;\n\tpadding: 0;\n\ttransform: translateX(-5px);\n\tfilter: var(--icon-filter);\n\tbackground-image: url(static/img/edit.svg);\n}\n\n.profile-container .input-visible .edit-button {\n\tdisplay: none;\n}\n.profile-container form:not(.input-visible),\n.profile-container form:not(.input-visible) input,\n.profile-container form:not(.input-visible) button {\n\tcursor: pointer;\n}\n.profile-container form:not(.input-visible):hover {\n\topacity: 0.6;\n}\n.profile-container form:not(.input-visible) input {\n\tbackground: transparent;\n}\n\n.profile-stats {\n\tdisplay: grid;\n\tjustify-content: center;\n\tgrid-template-columns: 200px 200px;\n\tgap: 10px;\n}\n\n@media (max-width: 500px) {\n\t.profile-stats {\n\t\tgrid-template-columns: 200px;\n\t}\n}\n\n.profile-stat {\n\t--wrinkled-paper-color: var(--container-ui-bg-color);\n\tpadding: 10px;\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: space-between;\n}\n\n.profile-stat-icon {\n\twidth: 25px;\n\theight: 25px;\n\ttransform: scale(1.5);\n\tfilter: var(--icon-filter);\n}\n'
+    `.profile-container {
+\tdisplay: flex;
+\tmargin-bottom: 10px;
+}
+
+.profile-container form {
+\tdisplay: flex;
+}
+
+.profile-container input {
+\tmargin: 0;
+\tline-height: 1;
+\theight: 40px;
+}
+
+.profile-container input:disabled {
+\tcolor: var(--default-text-color);
+\tpointer-events: none;
+}
+
+.player-name {
+\tfont-size: 24px;
+\tpadding: 7px;
+\tline-height: 1;
+}
+
+.dummy-text {
+\tposition: absolute;
+\tfont-size: 24px;
+\tpointer-events: none;
+\tpadding: 7px;
+\tvisibility: hidden;
+}
+
+.profile-container .edit-button {
+\twidth: 40px;
+\theight: 40px;
+\tborder: none;
+\tappearance: none;
+\tbackground: transparent;
+\tpadding: 0;
+\ttransform: translateX(-5px);
+\tfilter: var(--icon-filter);
+\tbackground-image: url(static/img/edit.svg);
+}
+
+.profile-container .input-visible .edit-button {
+\tdisplay: none;
+}
+.profile-container form:not(.input-visible),
+.profile-container form:not(.input-visible) input,
+.profile-container form:not(.input-visible) button {
+\tcursor: pointer;
+}
+.profile-container form:not(.input-visible):hover {
+\topacity: 0.6;
+}
+.profile-container form:not(.input-visible) input {
+\tbackground: transparent;
+}
+
+.profile-stats {
+\tdisplay: grid;
+\tjustify-content: center;
+\tgrid-template-columns: 200px 200px;
+\tgap: 10px;
+}
+
+@media (max-width: 500px) {
+\t.profile-stats {
+\t\tgrid-template-columns: 200px;
+\t}
+}
+
+.profile-stat {
+\t--wrinkled-paper-color: var(--container-ui-bg-color);
+\tpadding: 10px;
+\tdisplay: flex;
+\talign-items: center;
+\tjustify-content: space-between;
+}
+
+.profile-stat-icon {
+\twidth: 25px;
+\theight: 25px;
+\ttransform: scale(1.5);
+\tfilter: var(--icon-filter);
+}
+`
 );
 const sheet$7 = new CSSStyleSheet;
 sheet$7.replaceSync(
-    '.shopDialogContent{\n\tdisplay: flex;\n\talign-items: stretch;\n\tmax-width: 80vw;\n\twidth: max-content;\n\tgap: 10px;\n}\n\nh2.shop-presets-title {\n\tmargin: 0;\n}\n\n.shop-skin-selection-list {\n\tdisplay: flex;\n\toverflow-x: scroll;\n\tmax-width: 700px;\n\tscroll-behavior: smooth;\n}\n\n@media (min-height: 650px) and (min-width: 800px) {\n\t.shop-class-selection-list {\n\t\toverflow-x: initial;\n\t\tflex-wrap: wrap;\n\t\tjustify-content: center;\n\t\twidth: 700px;\n\t}\n}\n\n.shop-skin-selection-item {\n\tposition: relative;\n\tmin-width: 200px;\n\tmin-height: 320px;\n\tmargin: 10px;\n}\n\n.shop-skin-selection-image {\n\tmin-width: 200px;\n\tmin-height: 300px;\n}\n\n.shop-class-selection-item {\n\tmin-height: 240px;\n}\n\n.shop-skin-selection-list-add-button {\n\talign-self: center;\n}\n\n.shop-skin-selection-edit-button {\n\tposition: absolute;\n    left: 50%;\n    bottom: 0px;\n    transform: translate(-50%, 0);\n    margin: 0px;\n}\n\n.corner-delete-button {\n\tposition: absolute;\n\ttop: 0;\n\tright: 0;\n\tpadding: 8px;\n\tfont-size: 12pt;\n\theight: auto;\n\tmargin: 0;\n}\n\n.shop-items-grid-view{\n\tdisplay: grid;\n\tgrid-template-columns: repeat(auto-fit, 100px);\n\tgrid-gap: 5px;\n\twidth: 100%;\n\theight: fit-content;\n\tmax-height: 300px;\n\tjustify-content: center;\n}\n\n.shopItem{\n\tborder: none;\n\twidth: 100px;\n\theight: 100px;\n\tposition: relative;\n\t--wrinkled-paper-color: var(--shop-item-background-color);\n}\n\n.shopItemUsage-confirmPurchase {\n\tmargin: auto;\n\twidth: 200px;\n\theight: 200px;\n}\n\n.shopItem.selected{\n\t--wrinkled-paper-border-size: 3;\n\t--wrinkled-paper-border-color: var(--default-wrinkled-paper-border-color);\n}\n.shopItem:focus-visible {\n\toutline: none;\n\t--wrinkled-paper-border-size: 3;\n\t--wrinkled-paper-border-color: var(--blue-highlight-color);\n}\n\n.shopItem:not(.shopItemUsage-confirmPurchase):not(.selected.preventUnequip) {\n\tcursor: pointer;\n}\n.shopItem:hover:not(.shopItemUsage-confirmPurchase):not(.selected.preventUnequip) {\n\t--wrinkled-paper-color: var(--shop-item-background-color-hover);\n}\n.shopItem:active:not(.shopItemUsage-confirmPurchase):not(.selected.preventUnequip) {\n\t--wrinkled-paper-color: var(--shop-item-background-color-active);\n}\n\n.shopItem.highlight:not(.shopItemUsage-confirmPurchase) {\n\tanimation: shop-item-highlight 5s;\n}\n\n@keyframes shop-item-highlight {\n\t0% {\n\t\t--wrinkled-paper-color: var(--shop-item-highlight-color);\n\t}\n\t50% {\n\t\t--wrinkled-paper-color: var(--shop-item-highlight-color);\n\t}\n\t100% {\n\t\t--wrinkled-paper-color: var(--shop-item-background-color);\n\t}\n}\n\n.shopItem > canvas {\n\tpointer-events: none;\n}\n.shopItem > canvas.needs-mask {\n\t--mask: radial-gradient(closest-side, black 50%, transparent);\n\t-webkit-mask-image: var(--mask);\n\tmask-image: var(--mask);\n}\n.shopItemLocked:not(.shopItemUsage-confirmPurchase) > canvas {\n\tfilter: grayscale(100%);\n}\n.shopItem:not(.shopItemUsage-confirmPurchase) > canvas {\n\twidth: 100px;\n\theight: 100px;\n\ttransition: transform 0.2s;\n\tz-index: 101;\n\tposition: relative;\n}\n\n.shopItemLock {\n\twidth: 80px;\n\theight: 80px;\n\tposition: absolute;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\tbackground: url(static/img/menuUI/shop/lock.svg);\n\topacity: 0.4;\n\ttransition: opacity 0.2s;\n\tz-index: 102;\n}\n.shopItemLock.rewarded-break-unlockable {\n\twidth: 60px;\n\theight: 60px;\n\tbackground: url(static/img/rewardedAdIcon.svg);\n}\n\n.shopItem:not(.shopItemUsage-confirmPurchase):hover > canvas {\n\tfilter: none;\n\ttransform: scale(1.7);\n}\n.shopItem:hover > .shopItemLock {\n\topacity: 0;\n}\n\n.shopItemOwned > .shopItemLock, .shopItemUsage-confirmPurchase > .shopItemLock {\n\tdisplay: none;\n}\n\n.shopItem > .currency-wrapper {\n\tposition: absolute;\n\tbottom: 0;\n\tleft: 50%;\n\ttransform: translateX(-50%);\n\toverflow: hidden;\n\tz-index: 103;\n}\n.shopItem:not(.shopItemUsage-confirmPurchase):hover > .currency-wrapper {\n\tz-index: 100;\n}\n.shopItem > .currency-wrapper > .currency-container {\n\ttransition: transform 0.2s;\n}\n.shopItem:hover > .currency-wrapper > .currency-container {\n\ttransform: translateY(100%);\n}\n\n.shopSkinPreview{\n\tdisplay: inline-block;\n\tmin-width: 200px;\n\tbackground: #0088ff;\n\tposition: relative;\n}\n\n.shop-skin-preview-canvas {\n\tdisplay: block;\n}\n\n.shop-skin-preview-download-button {\n\twidth: 50px;\n\theight: 50px;\n\tbackground: url(static/img/menuUI/download.svg);\n\tposition: absolute;\n\tbottom: 0;\n\tright: 0;\n\tcursor: pointer;\n\topacity: 0.4;\n}\n.shop-skin-preview-download-button:hover {\n\topacity: 0.7;\n}\n\n.shop-gender-toggle-container {\n\tdisplay: flex;\n\talign-items: center;\n}\n.gender-icon{\n\twidth: 25px;\n\theight: 25px;\n\tbackground: no-repeat center;\n\tfilter: var(--icon-filter);\n}\n.gender-icon.male {\n\tbackground-image: url(static/img/menuUI/shop/male.svg);\n}\n.gender-icon.female {\n\tbackground-image: url(static/img/menuUI/shop/female.svg);\n}\n\n.shop-color-buttons-corner {\n\tdisplay: flex;\n}\n\n.shop-color-button {\n\twidth: 20px;\n\theight: 20px;\n\tmargin: 0 1px;\n\tappearance: none;\n\tborder-radius: 100px;\n\toutline: none;\n\tborder: 2px solid var(--default-wrinkled-paper-border-color);\n\tpadding: 0;\n\tbox-shadow: 0px 1px var(--default-wrinkled-paper-border-color);\n\tcursor: pointer;\n}\n\n.shop-color-button:hover {\n\tfilter: brightness(120%);\n}\n\n.stat-class-tooltip {\n\tposition: absolute;\n\t--wrinkled-paper-color: var(--shop-item-background-color);\n\tpadding: 10px;\n\tpointer-events: none;\n\ttransition: transform 0.2s, opacity 0.2s;\n\ttransform: translate(-50%, -100%);\n\tfilter: var(--default-drop-shadow);\n}\n.stat-class-tooltip.transitioning {\n\ttransform: translate(-50%, -80%);\n\topacity: 0;\n}\n\n.stat-class-tooltip ul {\n\tlist-style-type: none;\n\tpadding: 0;\n\tmargin: 0;\n}\n\n.stat-class-tooltip li {\n\tdisplay: flex;\n\talign-items: center;\n\tgap: 5px;\n}\n\n.stat-class-icon {\n\twidth: 25px;\n\theight: 25px;\n\tdisplay: inline-block;\n}\n'
+    `.shopDialogContent{
+\tdisplay: flex;
+\talign-items: stretch;
+\tmax-width: 80vw;
+\twidth: max-content;
+\tgap: 10px;
+}
+
+h2.shop-presets-title {
+\tmargin: 0;
+}
+
+.shop-skin-selection-list {
+\tdisplay: flex;
+\toverflow-x: scroll;
+\tmax-width: 700px;
+\tscroll-behavior: smooth;
+}
+
+@media (min-height: 650px) and (min-width: 800px) {
+\t.shop-class-selection-list {
+\t\toverflow-x: initial;
+\t\tflex-wrap: wrap;
+\t\tjustify-content: center;
+\t\twidth: 700px;
+\t}
+}
+
+.shop-skin-selection-item {
+\tposition: relative;
+\tmin-width: 200px;
+\tmin-height: 320px;
+\tmargin: 10px;
+}
+
+.shop-skin-selection-image {
+\tmin-width: 200px;
+\tmin-height: 300px;
+}
+
+.shop-class-selection-item {
+\tmin-height: 240px;
+}
+
+.shop-skin-selection-list-add-button {
+\talign-self: center;
+}
+
+.shop-skin-selection-edit-button {
+\tposition: absolute;
+    left: 50%;
+    bottom: 0px;
+    transform: translate(-50%, 0);
+    margin: 0px;
+}
+
+.corner-delete-button {
+\tposition: absolute;
+\ttop: 0;
+\tright: 0;
+\tpadding: 8px;
+\tfont-size: 12pt;
+\theight: auto;
+\tmargin: 0;
+}
+
+.shop-items-grid-view{
+\tdisplay: grid;
+\tgrid-template-columns: repeat(auto-fit, 100px);
+\tgrid-gap: 5px;
+\twidth: 100%;
+\theight: fit-content;
+\tmax-height: 300px;
+\tjustify-content: center;
+}
+
+.shopItem{
+\tborder: none;
+\twidth: 100px;
+\theight: 100px;
+\tposition: relative;
+\t--wrinkled-paper-color: var(--shop-item-background-color);
+}
+
+.shopItemUsage-confirmPurchase {
+\tmargin: auto;
+\twidth: 200px;
+\theight: 200px;
+}
+
+.shopItem.selected{
+\t--wrinkled-paper-border-size: 3;
+\t--wrinkled-paper-border-color: var(--default-wrinkled-paper-border-color);
+}
+.shopItem:focus-visible {
+\toutline: none;
+\t--wrinkled-paper-border-size: 3;
+\t--wrinkled-paper-border-color: var(--blue-highlight-color);
+}
+
+.shopItem:not(.shopItemUsage-confirmPurchase):not(.selected.preventUnequip) {
+\tcursor: pointer;
+}
+.shopItem:hover:not(.shopItemUsage-confirmPurchase):not(.selected.preventUnequip) {
+\t--wrinkled-paper-color: var(--shop-item-background-color-hover);
+}
+.shopItem:active:not(.shopItemUsage-confirmPurchase):not(.selected.preventUnequip) {
+\t--wrinkled-paper-color: var(--shop-item-background-color-active);
+}
+
+.shopItem.highlight:not(.shopItemUsage-confirmPurchase) {
+\tanimation: shop-item-highlight 5s;
+}
+
+@keyframes shop-item-highlight {
+\t0% {
+\t\t--wrinkled-paper-color: var(--shop-item-highlight-color);
+\t}
+\t50% {
+\t\t--wrinkled-paper-color: var(--shop-item-highlight-color);
+\t}
+\t100% {
+\t\t--wrinkled-paper-color: var(--shop-item-background-color);
+\t}
+}
+
+.shopItem > canvas {
+\tpointer-events: none;
+}
+.shopItem > canvas.needs-mask {
+\t--mask: radial-gradient(closest-side, black 50%, transparent);
+\t-webkit-mask-image: var(--mask);
+\tmask-image: var(--mask);
+}
+.shopItemLocked:not(.shopItemUsage-confirmPurchase) > canvas {
+\tfilter: grayscale(100%);
+}
+.shopItem:not(.shopItemUsage-confirmPurchase) > canvas {
+\twidth: 100px;
+\theight: 100px;
+\ttransition: transform 0.2s;
+\tz-index: 101;
+\tposition: relative;
+}
+
+.shopItemLock {
+\twidth: 80px;
+\theight: 80px;
+\tposition: absolute;
+\tleft: 50%;
+\ttop: 50%;
+\ttransform: translate(-50%, -50%);
+\tbackground: url(static/img/menuUI/shop/lock.svg);
+\topacity: 0.4;
+\ttransition: opacity 0.2s;
+\tz-index: 102;
+}
+.shopItemLock.rewarded-break-unlockable {
+\twidth: 60px;
+\theight: 60px;
+\tbackground: url(static/img/rewardedAdIcon.svg);
+}
+
+.shopItem:not(.shopItemUsage-confirmPurchase):hover > canvas {
+\tfilter: none;
+\ttransform: scale(1.7);
+}
+.shopItem:hover > .shopItemLock {
+\topacity: 0;
+}
+
+.shopItemOwned > .shopItemLock, .shopItemUsage-confirmPurchase > .shopItemLock {
+\tdisplay: none;
+}
+
+.shopItem > .currency-wrapper {
+\tposition: absolute;
+\tbottom: 0;
+\tleft: 50%;
+\ttransform: translateX(-50%);
+\toverflow: hidden;
+\tz-index: 103;
+}
+.shopItem:not(.shopItemUsage-confirmPurchase):hover > .currency-wrapper {
+\tz-index: 100;
+}
+.shopItem > .currency-wrapper > .currency-container {
+\ttransition: transform 0.2s;
+}
+.shopItem:hover > .currency-wrapper > .currency-container {
+\ttransform: translateY(100%);
+}
+
+.shopSkinPreview{
+\tdisplay: inline-block;
+\tmin-width: 200px;
+\tbackground: #0088ff;
+\tposition: relative;
+}
+
+.shop-skin-preview-canvas {
+\tdisplay: block;
+}
+
+.shop-skin-preview-download-button {
+\twidth: 50px;
+\theight: 50px;
+\tbackground: url(static/img/menuUI/download.svg);
+\tposition: absolute;
+\tbottom: 0;
+\tright: 0;
+\tcursor: pointer;
+\topacity: 0.4;
+}
+.shop-skin-preview-download-button:hover {
+\topacity: 0.7;
+}
+
+.shop-gender-toggle-container {
+\tdisplay: flex;
+\talign-items: center;
+}
+.gender-icon{
+\twidth: 25px;
+\theight: 25px;
+\tbackground: no-repeat center;
+\tfilter: var(--icon-filter);
+}
+.gender-icon.male {
+\tbackground-image: url(static/img/menuUI/shop/male.svg);
+}
+.gender-icon.female {
+\tbackground-image: url(static/img/menuUI/shop/female.svg);
+}
+
+.shop-color-buttons-corner {
+\tdisplay: flex;
+}
+
+.shop-color-button {
+\twidth: 20px;
+\theight: 20px;
+\tmargin: 0 1px;
+\tappearance: none;
+\tborder-radius: 100px;
+\toutline: none;
+\tborder: 2px solid var(--default-wrinkled-paper-border-color);
+\tpadding: 0;
+\tbox-shadow: 0px 1px var(--default-wrinkled-paper-border-color);
+\tcursor: pointer;
+}
+
+.shop-color-button:hover {
+\tfilter: brightness(120%);
+}
+
+.stat-class-tooltip {
+\tposition: absolute;
+\t--wrinkled-paper-color: var(--shop-item-background-color);
+\tpadding: 10px;
+\tpointer-events: none;
+\ttransition: transform 0.2s, opacity 0.2s;
+\ttransform: translate(-50%, -100%);
+\tfilter: var(--default-drop-shadow);
+}
+.stat-class-tooltip.transitioning {
+\ttransform: translate(-50%, -80%);
+\topacity: 0;
+}
+
+.stat-class-tooltip ul {
+\tlist-style-type: none;
+\tpadding: 0;
+\tmargin: 0;
+}
+
+.stat-class-tooltip li {
+\tdisplay: flex;
+\talign-items: center;
+\tgap: 5px;
+}
+
+.stat-class-icon {
+\twidth: 25px;
+\theight: 25px;
+\tdisplay: inline-block;
+}
+`
 );
 const sheet$6 = new CSSStyleSheet;
 sheet$6.replaceSync(
-    '.squad-split-container {\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: stretch;\n\tmargin-bottom: 30px;\n}\n\n.squad-split-divider {\n\tdisplay: flex;\n\tflex-direction: column;\n\ttext-align: center;\n\tmargin: 0px 15px;\n}\n\n.squad-split-divider-line {\n\twidth: 19px;\n\tflex-grow: 1;\n\t--wrinkled-line-direction: vertical;\n\t--wrinkled-line-segments: 0.05;\n\t--wrinkled-line-wrinkle-size: 6px;\n}\n\n.squad-split-section {\n\twidth: 234px;\n\ttext-align: center;\n\tmargin: auto;\n}\n\n.squad-id-container {\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: center;\n\tgap: 7px;\n}\n\n.squad-id-button {\n\tpadding: 0;\n\tposition: relative;\n}\n\n.squad-id-copied-text {\n\tcolor: var(--default-text-color);\n\tposition: absolute;\n\tleft: 50%;\n\ttop: 50%;\n\ttransform: translate(-50%, -50%);\n\tdisplay: none;\n}\n.squad-id-copied-text.animating {\n\tdisplay: inherit;\n\tanimation-name: copy-squad-url-button-animation;\n\tanimation-duration: 1s;\n\tanimation-fill-mode: both;\n}\n\n@keyframes copy-squad-url-button-animation {\n\t0% {\n\t\topacity: 1;\n\t\ttransform: translate(-50%, -50%);\n\t}\n\t100% {\n\t\topacity: 0;\n\t\ttransform: translate(-50%, -50%) translateY(-30px);\n\t}\n}\n\n.squad-id {\n\tfont-size: 20pt;\n}\n\n.join-squad-input {\n\twidth: 100%;\n\ttext-align: center;\n}\n\n.in-squad-content {\n\tdisplay: flex;\n\tjustify-content: center;\n\talign-items: flex-start;\n}\n\n.squad-settings-button {\n\twidth: 30px;\n\theight: 30px;\n\tposition: absolute;\n\tright: 20px;\n\tbottom: 20px;\n}\n\n.squad-players-list {\n\tbackground: var(--items-table-bg-color) !important;\n\toverflow: auto;\n\tflex-grow: 1;\n\tmax-width: 250px;\n\tmax-height: min(300px, 30vh);\n}\n\n.squad-players-list > table {\n\twidth: 100%;\n}\n\n.squad-players-list > table > tbody > tr > .squad-players-leader-container {\n\twidth: 20px;\n}\n\n.squad-players-list > table > tbody > tr > .squad-players-avatar-container {\n\twidth: 40px;\n\tpadding: 0px;\n}\n\n.squad-leader-icon {\n\tbackground: url(static/img/menuUI/crown.svg) no-repeat center;\n\twidth: 15px;\n\theight: 15px;\n\tfilter: var(--icon-filter);\n}\n\n.in-squad-buttons {\n\tdisplay: flex;\n\tflex-direction: column;\n\talign-self: flex-end;\n}\n\n.in-squad-buttons.hidden {\n\tdisplay: none;\n}\n\n@media (max-width: 520px) {\n\t.squad-split-container {\n\t\tflex-direction: column;\n\t}\n\n\t.squad-split-divider {\n\t\tflex-direction: row;\n\t\tmargin: 15px 0px;\n\t}\n\n\t.squad-split-divider-line {\n\t\t--wrinkled-line-direction: horizontal;\n\t}\n\n\t.in-squad-content {\n\t\tflex-direction: column;\n\t\talign-items: stretch;\n\t}\n\n\t.in-squad-buttons {\n\t\tflex-flow: row wrap;\n\t\talign-self: auto;\n\t}\n\n\t.squad-split-divider-line {\n\t\t--wrinkled-line-wrinkle-size: 3px;\n\t}\n\n\t.squad-split-divider > span {\n\t\tmargin: 0px 10px;\n\t}\n\n\t.squad-players-list {\n\t\tmax-width: 100%;\n\t}\n\n\n\t.squad-settings-button {\n\t\tright: 20px;\n\t\ttop: 20px;\n\t\tbottom: initial;\n\t}\n}\n\n.squad-settings-leader-only-message {\n\tmax-width: 200px;\n\tmargin-bottom: 20px;\n}\n'
+    `.squad-split-container {
+\tdisplay: flex;
+\tjustify-content: center;
+\talign-items: stretch;
+\tmargin-bottom: 30px;
+}
+
+.squad-split-divider {
+\tdisplay: flex;
+\tflex-direction: column;
+\ttext-align: center;
+\tmargin: 0px 15px;
+}
+
+.squad-split-divider-line {
+\twidth: 19px;
+\tflex-grow: 1;
+\t--wrinkled-line-direction: vertical;
+\t--wrinkled-line-segments: 0.05;
+\t--wrinkled-line-wrinkle-size: 6px;
+}
+
+.squad-split-section {
+\twidth: 234px;
+\ttext-align: center;
+\tmargin: auto;
+}
+
+.squad-id-container {
+\tdisplay: flex;
+\talign-items: center;
+\tjustify-content: center;
+\tgap: 7px;
+}
+
+.squad-id-button {
+\tpadding: 0;
+\tposition: relative;
+}
+
+.squad-id-copied-text {
+\tcolor: var(--default-text-color);
+\tposition: absolute;
+\tleft: 50%;
+\ttop: 50%;
+\ttransform: translate(-50%, -50%);
+\tdisplay: none;
+}
+.squad-id-copied-text.animating {
+\tdisplay: inherit;
+\tanimation-name: copy-squad-url-button-animation;
+\tanimation-duration: 1s;
+\tanimation-fill-mode: both;
+}
+
+@keyframes copy-squad-url-button-animation {
+\t0% {
+\t\topacity: 1;
+\t\ttransform: translate(-50%, -50%);
+\t}
+\t100% {
+\t\topacity: 0;
+\t\ttransform: translate(-50%, -50%) translateY(-30px);
+\t}
+}
+
+.squad-id {
+\tfont-size: 20pt;
+}
+
+.join-squad-input {
+\twidth: 100%;
+\ttext-align: center;
+}
+
+.in-squad-content {
+\tdisplay: flex;
+\tjustify-content: center;
+\talign-items: flex-start;
+}
+
+.squad-settings-button {
+\twidth: 30px;
+\theight: 30px;
+\tposition: absolute;
+\tright: 20px;
+\tbottom: 20px;
+}
+
+.squad-players-list {
+\tbackground: var(--items-table-bg-color) !important;
+\toverflow: auto;
+\tflex-grow: 1;
+\tmax-width: 250px;
+\tmax-height: min(300px, 30vh);
+}
+
+.squad-players-list > table {
+\twidth: 100%;
+}
+
+.squad-players-list > table > tbody > tr > .squad-players-leader-container {
+\twidth: 20px;
+}
+
+.squad-players-list > table > tbody > tr > .squad-players-avatar-container {
+\twidth: 40px;
+\tpadding: 0px;
+}
+
+.squad-leader-icon {
+\tbackground: url(static/img/menuUI/crown.svg) no-repeat center;
+\twidth: 15px;
+\theight: 15px;
+\tfilter: var(--icon-filter);
+}
+
+.in-squad-buttons {
+\tdisplay: flex;
+\tflex-direction: column;
+\talign-self: flex-end;
+}
+
+.in-squad-buttons.hidden {
+\tdisplay: none;
+}
+
+@media (max-width: 520px) {
+\t.squad-split-container {
+\t\tflex-direction: column;
+\t}
+
+\t.squad-split-divider {
+\t\tflex-direction: row;
+\t\tmargin: 15px 0px;
+\t}
+
+\t.squad-split-divider-line {
+\t\t--wrinkled-line-direction: horizontal;
+\t}
+
+\t.in-squad-content {
+\t\tflex-direction: column;
+\t\talign-items: stretch;
+\t}
+
+\t.in-squad-buttons {
+\t\tflex-flow: row wrap;
+\t\talign-self: auto;
+\t}
+
+\t.squad-split-divider-line {
+\t\t--wrinkled-line-wrinkle-size: 3px;
+\t}
+
+\t.squad-split-divider > span {
+\t\tmargin: 0px 10px;
+\t}
+
+\t.squad-players-list {
+\t\tmax-width: 100%;
+\t}
+
+
+\t.squad-settings-button {
+\t\tright: 20px;
+\t\ttop: 20px;
+\t\tbottom: initial;
+\t}
+}
+
+.squad-settings-leader-only-message {
+\tmax-width: 200px;
+\tmargin-bottom: 20px;
+}
+`
 );
 const sheet$5 = new CSSStyleSheet;
 sheet$5.replaceSync(
-    '.class-selection-image-container {\n\tposition: relative;\n\tmin-width: 200px;\n\tmin-height: 200px;\n}\n\n.class-selection-image-container.in-game {\n\tmin-width: 100px;\n\tmin-height: 100px;\n}\n\n.class-selection-image,\n.class-selection-image-background {\n\tposition: absolute;\n\tinset: 0;\n}\n\n.class-selection-image {\n\tbackground-size: contain;\n}\n\n.class-selection-image-background {\n\t--wrinkled-paper-color: #d8d8d8;\n\t--wrinkled-paper-banner-color: #0000001c;\n\t--wrinkled-paper-banner-size: 40px;\n\t--wrinkled-paper-border-size: 20px;\n\t--wrinkled-paper-border-color: #0000002b;\n}\n\n.class-selection-image-container.in-game > .class-selection-image-background {\n\t--wrinkled-paper-banner-size: 20px;\n\t--wrinkled-paper-border-size: 12px;\n}\n\n.class-selection-image-container.in-game > .class-selection-image {\n\tbackground-size: 130%;\n\tbackground-position: 50% 10%;\n}\n'
+    `.class-selection-image-container {
+\tposition: relative;
+\tmin-width: 200px;
+\tmin-height: 200px;
+}
+
+.class-selection-image-container.in-game {
+\tmin-width: 100px;
+\tmin-height: 100px;
+}
+
+.class-selection-image,
+.class-selection-image-background {
+\tposition: absolute;
+\tinset: 0;
+}
+
+.class-selection-image {
+\tbackground-size: contain;
+}
+
+.class-selection-image-background {
+\t--wrinkled-paper-color: #d8d8d8;
+\t--wrinkled-paper-banner-color: #0000001c;
+\t--wrinkled-paper-banner-size: 40px;
+\t--wrinkled-paper-border-size: 20px;
+\t--wrinkled-paper-border-color: #0000002b;
+}
+
+.class-selection-image-container.in-game > .class-selection-image-background {
+\t--wrinkled-paper-banner-size: 20px;
+\t--wrinkled-paper-border-size: 12px;
+}
+
+.class-selection-image-container.in-game > .class-selection-image {
+\tbackground-size: 130%;
+\tbackground-position: 50% 10%;
+}
+`
 );
 const sheet$4 = new CSSStyleSheet;
 sheet$4.replaceSync(
-    '.flag-score-container {\n\tposition: absolute;\n\tright: env(safe-area-inset-right);\n\ttop: env(safe-area-inset-top);\n\tz-index: 100;\n\tmargin: 30px;\n\tfilter: var(--default-drop-shadow);\n\tpointer-events: none;\n}\n\n@media(max-width: 700px), (max-height: 450px){\n\t.flag-score-container {\n\t\tmargin: 10px;\n\t\ttransform: scale(0.5);\n\t\ttransform-origin: top right;\n\t}\n}\n\n.flag-score-item {\n\tmargin: 3px;\n\tdisplay: flex;\n\tgap: 5px;\n}\n\n.flag-score-icon {\n\theight: 50px;\n\twidth: 50px;\n\tmargin-right: 10px;\n}\n\n.flag-score-point-el {\n\twidth: 40px;\n\theight: 40px;\n\talign-self: center;\n\ttransform: scale(1.5);\n}\n\n.flag-score-point-el .shadow {\n\tfill: rgba(0, 0, 0, 0.1);\n}\n.flag-score-point-el .bg {\n\tfill: var(--not-black);\n}\n\n.flag-score-point-el .return-timer-mask-bg,\n.flag-score-point-el .return-timer-mask-fg {\n\ttransition: fill 0.5s;\n}\n\n.flag-score-point-el .return-timer-mask-bg {\n\tfill: #999999;\n}\n\n.flag-score-point-el .return-timer-mask-fg {\n\tfill: white;\n}\n\n.flag-score-point-el.returned .return-timer-mask-bg,\n.flag-score-point-el.returned .return-timer-mask-fg {\n\tfill: black;\n}\n\n.flag-score-point-el.grabbed .return-timer-mask-bg,\n.flag-score-point-el.grabbed .return-timer-mask-fg {\n\tfill: white;\n}\n\n.flag-score-point-el .center-dot {\n\tfill: white;\n\ttransform-origin: center;\n\ttransition: transform 0.2s, fill 0.2s;\n}\n\n.flag-score-point-el.captured .center-dot {\n\tfill: var(--team-color);\n}\n\n.flag-score-point-el:not(.captured) .center-dot {\n\ttransform: scale(0.5);\n}\n\n.flag-score-point-el .border {\n\tfill: transparent;\n\tstroke-width: 15px;\n}\n\n.flag-score-point-el .border.bg {\n\tstroke: #656565;\n\tstroke-width: 13px;\n}\n.flag-score-point-el .border.fg {\n\tstroke: white;\n}\n\n.flag-score-point-el.removed .border,\n.flag-score-point-el.removed .bg {\n\tdisplay: none;\n}\n\n.flag-score-point-el:not(.removed.animating) .shards-container {\n\tdisplay: none;\n}\n.flag-score-point-el.removed.animating .shards-container {\n\tanimation: flag-score-break 1s both ease-out;\n}\n\n@property --shard-move-amount {\n\tsyntax: \'<number>\';\n\tinitial-value: 0;\n\tinherits: true;\n}\n\n@keyframes flag-score-break {\n\t0% {\n\t\t--shard-move-amount: 0;\n\t\topacity: 1;\n\t}\n\t20% {\n\t\t--shard-move-amount: 1.3;\n\t\topacity: 1;\n\t}\n\t100% {\n\t\t--shard-move-amount: 1.3;\n\t\topacity: 0;\n\t}\n}\n\n.flag-score-point-el .shard {\n\tfill: var(--not-black);\n\ttransform: translate(calc(var(--shard-move-amount) * var(--x-amount)), calc(var(--shard-move-amount) * var(--y-amount)));\n}\n'
+    `.flag-score-container {
+\tposition: absolute;
+\tright: env(safe-area-inset-right);
+\ttop: env(safe-area-inset-top);
+\tz-index: 100;
+\tmargin: 30px;
+\tfilter: var(--default-drop-shadow);
+\tpointer-events: none;
+}
+
+@media(max-width: 700px), (max-height: 450px){
+\t.flag-score-container {
+\t\tmargin: 10px;
+\t\ttransform: scale(0.5);
+\t\ttransform-origin: top right;
+\t}
+}
+
+.flag-score-item {
+\tmargin: 3px;
+\tdisplay: flex;
+\tgap: 5px;
+}
+
+.flag-score-icon {
+\theight: 50px;
+\twidth: 50px;
+\tmargin-right: 10px;
+}
+
+.flag-score-point-el {
+\twidth: 40px;
+\theight: 40px;
+\talign-self: center;
+\ttransform: scale(1.5);
+}
+
+.flag-score-point-el .shadow {
+\tfill: rgba(0, 0, 0, 0.1);
+}
+.flag-score-point-el .bg {
+\tfill: var(--not-black);
+}
+
+.flag-score-point-el .return-timer-mask-bg,
+.flag-score-point-el .return-timer-mask-fg {
+\ttransition: fill 0.5s;
+}
+
+.flag-score-point-el .return-timer-mask-bg {
+\tfill: #999999;
+}
+
+.flag-score-point-el .return-timer-mask-fg {
+\tfill: white;
+}
+
+.flag-score-point-el.returned .return-timer-mask-bg,
+.flag-score-point-el.returned .return-timer-mask-fg {
+\tfill: black;
+}
+
+.flag-score-point-el.grabbed .return-timer-mask-bg,
+.flag-score-point-el.grabbed .return-timer-mask-fg {
+\tfill: white;
+}
+
+.flag-score-point-el .center-dot {
+\tfill: white;
+\ttransform-origin: center;
+\ttransition: transform 0.2s, fill 0.2s;
+}
+
+.flag-score-point-el.captured .center-dot {
+\tfill: var(--team-color);
+}
+
+.flag-score-point-el:not(.captured) .center-dot {
+\ttransform: scale(0.5);
+}
+
+.flag-score-point-el .border {
+\tfill: transparent;
+\tstroke-width: 15px;
+}
+
+.flag-score-point-el .border.bg {
+\tstroke: #656565;
+\tstroke-width: 13px;
+}
+.flag-score-point-el .border.fg {
+\tstroke: white;
+}
+
+.flag-score-point-el.removed .border,
+.flag-score-point-el.removed .bg {
+\tdisplay: none;
+}
+
+.flag-score-point-el:not(.removed.animating) .shards-container {
+\tdisplay: none;
+}
+.flag-score-point-el.removed.animating .shards-container {
+\tanimation: flag-score-break 1s both ease-out;
+}
+
+@property --shard-move-amount {
+\tsyntax: '<number>';
+\tinitial-value: 0;
+\tinherits: true;
+}
+
+@keyframes flag-score-break {
+\t0% {
+\t\t--shard-move-amount: 0;
+\t\topacity: 1;
+\t}
+\t20% {
+\t\t--shard-move-amount: 1.3;
+\t\topacity: 1;
+\t}
+\t100% {
+\t\t--shard-move-amount: 1.3;
+\t\topacity: 0;
+\t}
+}
+
+.flag-score-point-el .shard {
+\tfill: var(--not-black);
+\ttransform: translate(calc(var(--shard-move-amount) * var(--x-amount)), calc(var(--shard-move-amount) * var(--y-amount)));
+}
+`
 );
 const sheet$3 = new CSSStyleSheet;
 sheet$3.replaceSync(
-    '.corner-stats-container {\n\tposition: absolute;\n\tbottom: 0;\n\tleft: 0;\n\tmargin: 5px;\n\tz-index: 1;\n}\n.corner-stats-container.hidden {\n\tdisplay: none;\n}\n\n.corner-stat {\n\tfont-size: 20pt;\n}\n\n.corner-stat .red {\n\tcolor: #ff2424;\n}\n'
+    `.corner-stats-container {
+\tposition: absolute;
+\tbottom: 0;
+\tleft: 0;
+\tmargin: 5px;
+\tz-index: 1;
+}
+.corner-stats-container.hidden {
+\tdisplay: none;
+}
+
+.corner-stat {
+\tfont-size: 20pt;
+}
+
+.corner-stat .red {
+\tcolor: #ff2424;
+}
+`
 );
 const sheet$2 = new CSSStyleSheet;
 sheet$2.replaceSync(
-    '.chat-container {\n\tposition: absolute;\n\tleft: 20px;\n\tbottom: 20px;\n\tpadding: 10px;\n\tfilter: var(--default-drop-shadow);\n\tpadding: 20px;\n\ttransition: transform 0.3s;\n\tz-index: 1;\n}\n.chat-container.up {\n\tbottom: 70px;\n}\n.chat-container.touch {\n\tbottom: 200px;\n}\n\n.chat-container.hidden {\n\ttransform: translateX(-150%);\n}\n\n.chat-log-container {\n\toverflow: hidden;\n\tmax-height: min(150px, 50vh);\n\tmax-width: min(400px, 50vw);\n}\n\n.chat-message-container {\n\tdisplay: flex;\n\tgap: 7px;\n\tmargin-bottom: 10px;\n}\n\n.chat-message-content {\n\toverflow-wrap: anywhere;\n\toverflow: hidden;\n}\n\n.chat-message-name {\n\tmargin: 0;\n}\n\n.chat-input {\n\tfont-size: 16px;\n\theight: 30px;\n\twidth: 300px;\n\tmargin: 0;\n}\n\n.chat-input::placeholder {\n\tfont-family: BlueNight, sans-serif;\n\ttext-transform: lowercase;\n\tfont-weight: lighter;\n\tline-height: 0.7em;\n\tfont-size: 20px;\n}\n'
+    `.chat-container {
+\tposition: absolute;
+\tleft: 20px;
+\tbottom: 20px;
+\tpadding: 10px;
+\tfilter: var(--default-drop-shadow);
+\tpadding: 20px;
+\ttransition: transform 0.3s;
+\tz-index: 1;
+}
+.chat-container.up {
+\tbottom: 70px;
+}
+.chat-container.touch {
+\tbottom: 200px;
+}
+
+.chat-container.hidden {
+\ttransform: translateX(-150%);
+}
+
+.chat-log-container {
+\toverflow: hidden;
+\tmax-height: min(150px, 50vh);
+\tmax-width: min(400px, 50vw);
+}
+
+.chat-message-container {
+\tdisplay: flex;
+\tgap: 7px;
+\tmargin-bottom: 10px;
+}
+
+.chat-message-content {
+\toverflow-wrap: anywhere;
+\toverflow: hidden;
+}
+
+.chat-message-name {
+\tmargin: 0;
+}
+
+.chat-input {
+\tfont-size: 16px;
+\theight: 30px;
+\twidth: 300px;
+\tmargin: 0;
+}
+
+.chat-input::placeholder {
+\tfont-family: BlueNight, sans-serif;
+\ttext-transform: lowercase;
+\tfont-weight: lighter;
+\tline-height: 0.7em;
+\tfont-size: 20px;
+}
+`
 );
 const sheet$1 = new CSSStyleSheet;
 sheet$1.replaceSync(
-    '.health-ui-container {\n\tposition: absolute;\n\tleft: 0;\n\ttop: 0;\n\tmargin: 30px;\n\tmargin-left: calc(env(safe-area-inset-left) + 60px);\n\tz-index: 100;\n\tpointer-events: none;\n\tfilter: var(--default-drop-shadow);\n\t--wrinkled-paper-wrinkle-size: 3px;\n}\n\n@media(max-width: 700px), (max-height: 450px){\n\t.health-ui-container{\n\t\ttransform: scale(0.5);\n\t\ttransform-origin: top left;\n\t\tmargin-top: calc(env(safe-area-inset-top) + 15px);\n\t}\n}\n\n.health-ui-bar-container {\n\tmargin: 8px;\n\tposition: relative;\n}\n\n.health-ui-bar-container, .health-ui-bar {\n\twidth: 270px;\n\theight: 22px;\n}\n\n.health-ui-bar {\n\tposition: absolute;\n\t--wrinkled-paper-wrinkle-size: 3px;\n\t--wrinkled-paper-tear-count-min: 0;\n\t--wrinkled-paper-tear-count-max: 0;\n}\n\n.health-ui-bar.border {\n\t--wrinkled-paper-border-size: 6px;\n\t--wrinkled-paper-color: transparent;\n}\n\n.health-ui-bar.clip {\n\toverflow: hidden;\n}\n\n.health-ui-bar.main {\n\t--wrinkled-paper-banner-color: #0000001c;\n\t--wrinkled-paper-banner-size: 40px;\n}\n\n.health-ui-bar.damage-protection {\n\t--wrinkled-paper-color: white;\n\ttransition: opacity 2s;\n\topacity: 0;\n}\n\n.health-ui-bar.bg {\n\t--wrinkled-paper-color: black;\n}\n\n.health-ui-heart {\n\twidth: 40px;\n\theight: 40px;\n\tposition: absolute;\n\tleft: -18px;\n\ttop: -5px;\n}\n\n.health-ui-heart .fg {\n\ttransform-origin: center;\n\ttransform-style: preserve-3d;\n}\n\n.health-ui-heart .fg.beating {\n\tanimation: 1.5s infinite beat;\n}\n\n@keyframes beat {\n\t0% { transform: none; }\n\t8% { transform: perspective(30px) rotate3d(1,1,0, -10deg) scale3d(1.1, 1.2, 1.1); }\n\t15% { transform: perspective(30px) rotate3d(1,1,0, 00deg) scale3d(1.2, 1.2, 1.2); }\n\t22% { transform: perspective(30px) rotate3d(1,1,0, 10deg) scale3d(1.2, 1.1, 1.1); }\n\t30% { transform: perspective(30px) rotate3d(1,1,0, -5deg) scale3d(0.95, 0.95, 0.95); }\n\t38% { transform: none; }\n\t100% { transform: none; }\n}\n'
+    `.health-ui-container {
+\tposition: absolute;
+\tleft: 0;
+\ttop: 0;
+\tmargin: 30px;
+\tmargin-left: calc(env(safe-area-inset-left) + 60px);
+\tz-index: 100;
+\tpointer-events: none;
+\tfilter: var(--default-drop-shadow);
+\t--wrinkled-paper-wrinkle-size: 3px;
+}
+
+@media(max-width: 700px), (max-height: 450px){
+\t.health-ui-container{
+\t\ttransform: scale(0.5);
+\t\ttransform-origin: top left;
+\t\tmargin-top: calc(env(safe-area-inset-top) + 15px);
+\t}
+}
+
+.health-ui-bar-container {
+\tmargin: 8px;
+\tposition: relative;
+}
+
+.health-ui-bar-container, .health-ui-bar {
+\twidth: 270px;
+\theight: 22px;
+}
+
+.health-ui-bar {
+\tposition: absolute;
+\t--wrinkled-paper-wrinkle-size: 3px;
+\t--wrinkled-paper-tear-count-min: 0;
+\t--wrinkled-paper-tear-count-max: 0;
+}
+
+.health-ui-bar.border {
+\t--wrinkled-paper-border-size: 6px;
+\t--wrinkled-paper-color: transparent;
+}
+
+.health-ui-bar.clip {
+\toverflow: hidden;
+}
+
+.health-ui-bar.main {
+\t--wrinkled-paper-banner-color: #0000001c;
+\t--wrinkled-paper-banner-size: 40px;
+}
+
+.health-ui-bar.damage-protection {
+\t--wrinkled-paper-color: white;
+\ttransition: opacity 2s;
+\topacity: 0;
+}
+
+.health-ui-bar.bg {
+\t--wrinkled-paper-color: black;
+}
+
+.health-ui-heart {
+\twidth: 40px;
+\theight: 40px;
+\tposition: absolute;
+\tleft: -18px;
+\ttop: -5px;
+}
+
+.health-ui-heart .fg {
+\ttransform-origin: center;
+\ttransform-style: preserve-3d;
+}
+
+.health-ui-heart .fg.beating {
+\tanimation: 1.5s infinite beat;
+}
+
+@keyframes beat {
+\t0% { transform: none; }
+\t8% { transform: perspective(30px) rotate3d(1,1,0, -10deg) scale3d(1.1, 1.2, 1.1); }
+\t15% { transform: perspective(30px) rotate3d(1,1,0, 00deg) scale3d(1.2, 1.2, 1.2); }
+\t22% { transform: perspective(30px) rotate3d(1,1,0, 10deg) scale3d(1.2, 1.1, 1.1); }
+\t30% { transform: perspective(30px) rotate3d(1,1,0, -5deg) scale3d(0.95, 0.95, 0.95); }
+\t38% { transform: none; }
+\t100% { transform: none; }
+}
+`
 );
 const sheet = new CSSStyleSheet;
 sheet.replaceSync(
-    '#qc-cmp2-ui {\n\tbackground: paint(wrinkledPaper);\n\t--wrinkled-paper-wrinkle-size: 6px;\n\t--wrinkled-paper-color: white;\n\t--wrinkled-paper-border-segments: 0.016;\n\t--wrinkled-paper-tear-count-min: 0.001;\n\t--wrinkled-paper-tear-count-max: 0.003;\n\t--wrinkled-paper-tear-depth-min: 5px;\n\t--wrinkled-paper-tear-depth-max: 15px;\n\t--wrinkled-paper-tear-width-min: 10px;\n\t--wrinkled-paper-tear-width-max: 20px;\n\t--wrinkled-paper-tear-angle-offset-min: 0.7;\n\t--wrinkled-paper-tear-angle-offset-max: 1.1;\n\t--wrinkled-paper-seed: 33;\n}\n\n#qc-cmp2-ui .qc-cmp2-consent-info {\n\tpadding: 30px;\n}\n\n#qc-cmp2-ui h2 {\n\tfont-family: BlueNight, sans-serif;\n\ttext-transform: lowercase;\n\tfont-weight: lighter;\n\tline-height: 0.7em;\n\tfont-size: 26pt;\n}\n\n#qc-cmp2-ui .qc-cmp2-footer {\n\tborder-top: none;\n\tbox-shadow: none;\n}\n\n#qc-cmp2-ui button[mode="primary"] > span,\n#qc-cmp2-ui button[mode="secondary"] > span,\n#qc-cmp2-ui button[mode="primary"],\n#qc-cmp2-ui button[mode="secondary"] {\n\tfont-family: BlueNight, sans-serif;\n\ttext-transform: lowercase;\n\tfont-weight: lighter;\n\tline-height: 0.7em;\n\tfont-size: 18pt;\n\tcursor: pointer;\n}\n\n#qc-cmp2-ui button[mode="primary"],\n#qc-cmp2-ui button[mode="secondary"] {\n\tpadding: 7px 30px;\n    margin: 4px 10px;\n    font-size: 24px;\n    height: 38px;\n    color: var(--default-wrinkled-paper-border-color);\n    white-space: nowrap;\n\n\tborder: none;\n\tappearance: none;\n\tbox-shadow: none;\n\tdisplay: block;\n\ttransition: none;\n\n\tbackground: paint(wrinkledPaper);\n\t--wrinkled-paper-color: white;\n    --wrinkled-paper-border-size: 3;\n    --wrinkled-paper-border-size-bottom: 6;\n    --wrinkled-paper-border-color: var(--default-wrinkled-paper-border-color);\n    --wrinkled-paper-seed: 70;\n    --wrinkled-paper-wrinkle-size: 2px;\n    --wrinkled-paper-border-segments: 0.02;\n    --wrinkled-paper-tear-count-min: 0;\n    --wrinkled-paper-tear-count-max: 0;\n}\n\n#qc-cmp2-ui button[mode="primary"]:hover:not(:disabled),\n#qc-cmp2-ui button[mode="secondary"]:hover:not(:disabled) {\n\tfilter: brightness(0.9);\n}\n#qc-cmp2-ui button[mode="primary"]:active:not(:disabled),\n#qc-cmp2-ui button[mode="secondary"]:active:not(:disabled) {\n\tfilter: brightness(0.8);\n}\n\n@media (min-width: 768px) {\n\t#qc-cmp2-ui button.qc-cmp2-hide-desktop {\n\t\tdisplay: none;\n\t}\n}\n'
+    `#qc-cmp2-ui {
+\tbackground: paint(wrinkledPaper);
+\t--wrinkled-paper-wrinkle-size: 6px;
+\t--wrinkled-paper-color: white;
+\t--wrinkled-paper-border-segments: 0.016;
+\t--wrinkled-paper-tear-count-min: 0.001;
+\t--wrinkled-paper-tear-count-max: 0.003;
+\t--wrinkled-paper-tear-depth-min: 5px;
+\t--wrinkled-paper-tear-depth-max: 15px;
+\t--wrinkled-paper-tear-width-min: 10px;
+\t--wrinkled-paper-tear-width-max: 20px;
+\t--wrinkled-paper-tear-angle-offset-min: 0.7;
+\t--wrinkled-paper-tear-angle-offset-max: 1.1;
+\t--wrinkled-paper-seed: 33;
+}
+
+#qc-cmp2-ui .qc-cmp2-consent-info {
+\tpadding: 30px;
+}
+
+#qc-cmp2-ui h2 {
+\tfont-family: BlueNight, sans-serif;
+\ttext-transform: lowercase;
+\tfont-weight: lighter;
+\tline-height: 0.7em;
+\tfont-size: 26pt;
+}
+
+#qc-cmp2-ui .qc-cmp2-footer {
+\tborder-top: none;
+\tbox-shadow: none;
+}
+
+#qc-cmp2-ui button[mode="primary"] > span,
+#qc-cmp2-ui button[mode="secondary"] > span,
+#qc-cmp2-ui button[mode="primary"],
+#qc-cmp2-ui button[mode="secondary"] {
+\tfont-family: BlueNight, sans-serif;
+\ttext-transform: lowercase;
+\tfont-weight: lighter;
+\tline-height: 0.7em;
+\tfont-size: 18pt;
+\tcursor: pointer;
+}
+
+#qc-cmp2-ui button[mode="primary"],
+#qc-cmp2-ui button[mode="secondary"] {
+\tpadding: 7px 30px;
+    margin: 4px 10px;
+    font-size: 24px;
+    height: 38px;
+    color: var(--default-wrinkled-paper-border-color);
+    white-space: nowrap;
+
+\tborder: none;
+\tappearance: none;
+\tbox-shadow: none;
+\tdisplay: block;
+\ttransition: none;
+
+\tbackground: paint(wrinkledPaper);
+\t--wrinkled-paper-color: white;
+    --wrinkled-paper-border-size: 3;
+    --wrinkled-paper-border-size-bottom: 6;
+    --wrinkled-paper-border-color: var(--default-wrinkled-paper-border-color);
+    --wrinkled-paper-seed: 70;
+    --wrinkled-paper-wrinkle-size: 2px;
+    --wrinkled-paper-border-segments: 0.02;
+    --wrinkled-paper-tear-count-min: 0;
+    --wrinkled-paper-tear-count-max: 0;
+}
+
+#qc-cmp2-ui button[mode="primary"]:hover:not(:disabled),
+#qc-cmp2-ui button[mode="secondary"]:hover:not(:disabled) {
+\tfilter: brightness(0.9);
+}
+#qc-cmp2-ui button[mode="primary"]:active:not(:disabled),
+#qc-cmp2-ui button[mode="secondary"]:active:not(:disabled) {
+\tfilter: brightness(0.8);
+}
+
+@media (min-width: 768px) {
+\t#qc-cmp2-ui button.qc-cmp2-hide-desktop {
+\t\tdisplay: none;
+\t}
+}
+`
 ),
     document.adoptedStyleSheets = [
         sheet$e,

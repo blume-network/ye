@@ -6062,7 +6062,7 @@ class ShopItem {
         if (
             this.prevNow = t,
                 this.isHovering ||
-                'confirmPurchase' == this.usage ? (
+                'confirmPurchase' === this.usage ? (
                     this.rotY -= 0.001 * e,
                         this.rotY = mod(this.rotY + Math.PI, 2 * Math.PI) - Math.PI
                 ) : (
@@ -28180,7 +28180,7 @@ function init() {
         t = i < 60 ? e.format( - Math.floor(i), 'second') : i < 3600 ? e.format( - Math.floor(i / 60), 'minute') : i < 86400 ? e.format( - Math.floor(i / 60 / 60), 'hour') : i < 31536000 ? e.format( - Math.floor(i / 60 / 60 / 24), 'day') : e.format( - Math.floor(i / 60 / 60 / 24 / 365), 'year'),
             t = ' (' + t + ')'
     }
-    console.log('loading v1703979296' + t),
+    console.log('loading v1703979296 LEGITED' + t),
         main = new Main,
         main.init()
 }
